@@ -1,0 +1,72 @@
+<deck>
+  <deckName>
+    Green Deck
+  </deckName>
+  <cards>
+    <card name="Plain" type="land">
+      <castingCost>
+        <!-- order is white, black, green, blue, red and colourless -->
+        <white>0</white>
+        <black>0</black>
+        <green>0</green>
+        <blue>0</blue>
+        <red>0</red>
+        <colourless>0</colourless>
+      </castingCost>
+      <count>11</count>
+      <picturePath>D:\Source pictures\Plains364.jpg</picturePath>
+      <properties/>
+    </card>
+    <card name="Mountain" type="land">
+      <castingCost>
+        <!-- order is white, black, green, blue, red and colourless -->
+        <white>0</white>
+        <black>0</black>
+        <green>0</green>
+        <blue>0</blue>
+        <red>0</red>
+        <colourless>0</colourless>
+      </castingCost>
+      <count>12</count>
+      <picturePath>D:\Source pictures\Mountain376.jpg</picturePath>
+      <properties/>
+    </card>
+    <card name="Glorious Anthem" type="enchantment">
+      <castingCost>
+        <!-- order is white, black, green, blue, red and colourless -->
+        <white>2</white>
+        <black>0</black>
+        <green>0</green>
+        <blue>0</blue>
+        <red>0</red>
+        <colourless>1</colourless>
+      </castingCost>
+      <count>4</count>
+      <picturePath>D:\Source pictures\GloriousAnthem.jpg</picturePath>
+      <properties>
+        <boost usable="inPlay">
+          <PowerBoost/>
+        </boost>      
+      </properties>
+    </card>
+    <card name="Tundra Wolves" type="creature">
+      <castingCost>
+        <white>1</white>
+        <black>0</black>
+        <green>0</green>
+        <blue>0</blue>
+        <red>0</red>
+        <colourless>0</colourless>
+      </castingCost>
+      <count>4</count>
+      <power>1</power>
+      <toughness>1</toughness>
+      <picturePath>D:\Source pictures\TundraWolves.jpg</picturePath>
+      <properties>
+        <boost usable="attack">
+          <FirstStrike></FirstStrike>
+        </boost>
+      </properties>
+    </card>
+  </cards>
+</deck>
