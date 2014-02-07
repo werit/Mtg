@@ -48,7 +48,7 @@ public class Arbiter {
         constr.gridheight = 1;
         constr.gridwidth = 2; // hovorim, ze bude zaberat dve policka. Potom nesmiem zabudnut nastavit scrollpanel na 8, aby sa spravil spravny pomer.
         constr.ipady = 10;
-        constr.weightx = 0; // hovorim aby nedostal ziadne miesto naviac, ak by aj bolo
+        constr.weightx = 0; // do not give any free space event if there is some.
         constr.weighty = 0;
         
         // Library_op
