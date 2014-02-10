@@ -47,9 +47,6 @@ public abstract class Card{
         ability.visit(this);
     }
     
-    void onTap(){}
-    
-    
+    abstract void onTap(Game.gameState state);
     JLabel fileSource;
-
 }

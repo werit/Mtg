@@ -6,6 +6,7 @@ package magicthegatheringgame;
 
 import java.util.ArrayList;
 import java.util.Map;
+import javax.swing.JLabel;
 
 
 
@@ -15,18 +16,34 @@ import java.util.Map;
  */
 public class Mana extends Card{
     /**
-     * probably no need to create middle class Mana
-     * nonetheless I made it to show that manas have some special rules applied to them
+     * 
      */
-    /*
-     in case of creating new type of mana, simply inherit from mana and override void onTap(Player pl) method
-     */
-    Mana(){
-        colorlessCost = 0;
-        plainCost = 0;
-        mountainCost = 0;
-        islandCost = 0;
-        swampCost = 0;
-        forestCost = 0;
+    Mana(String cardName,Player owner,JLabel pict){
+        super.cardName = cardName;
+        super.isTapAble = true;
+        super.owner = owner;
+        super.controller = owner;
+        super.fileSource = pict;
+        super.type = Game.cardType.LAND;
+        this.colorlessCost = 0;
+        this.plainCost = 0;
+        this.mountainCost = 0;
+        this.islandCost = 0;
+        this.swampCost = 0;
+        this.forestCost = 0;
+    }
+    
+    @Override
+    void onTap(Game.gameState state){
+        switch(state){
+            case ATTACK:
+                if(abilUse.get(Game.boostUsabil.ATTACK)!= null){
+                    
+                }
+                default:
+                    break;
+        }
+        for (abilUse.keySet())
+            
     }
 }

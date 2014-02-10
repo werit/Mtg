@@ -13,18 +13,16 @@ import javax.swing.JLabel;
  * @author werit
  */
 public class Creature extends Card {
-    @Override void onTap(){
-        
-    }
-    
     private byte power;
     private byte toughness;
 
     public Creature(String cardName,Player owner,JLabel pict,byte whitenCst,byte blackpCst,byte greenCst,byte blueCst,byte redCst,byte colorlessCst,byte power, byte toughness) {
         super.cardName = cardName;
         super.isTapAble = true;
-        this.owner = owner;
-        this.controller = owner;
+        super.owner = owner;
+        super.controller = owner;
+        super.fileSource = pict;
+        super.type = Game.cardType.CREATURE;
         this.plainCost = whitenCst;
         this.swampCost = blackpCst;
         this.forestCost = greenCst;
@@ -33,9 +31,6 @@ public class Creature extends Card {
         this.colorlessCost = colorlessCst;
         this.power = power;
         this.toughness = toughness;
-        this.fileSource = pict;
-        this.type = Game.cardType.CREATURE;
-        
     }
 
     public void setPower(byte addition){
@@ -48,5 +43,35 @@ public class Creature extends Card {
     void accept(CreatureDecorator ability){
         ability.visit(this);
     }
-    
+    @Override
+    void accept(Haste ability){
+        ability.visit(this);
+    }    
+    @Override
+    void accept(FirstStrike ability){
+        ability.visit(this);
+    }    
+    @Override
+    void onTap(Game.gameState state){
+        ArrayList<Game.cardProperties> abil;
+        switch(state){
+            case ATTACK:
+                abil = abilUse.get(Game.boostUsabil.ATTACK);
+                if(abil != null){
+                   for (int i = 0; i < abil.size();++i){
+                       Game.propertyStorage.get(abil.get(i)).visit(this);
+                   } 
+                }
+                default:
+                abil = abilUse.get(Game.boostUsabil.INSTANT);
+                if(abil != null){
+                   for (int i = 0; i < abil.size();++i){
+                       Game.propertyStorage.get(abil.get(i)).visit(this);
+                   } 
+                }
+                    break;
+        }
+        
+            
+    }
 }

@@ -125,15 +125,30 @@ public class Game {
     enum boostUsabil{
         COMES_INTO_PLAY,
         ATTACK,
-        IN_PLAY,
-        INSTANT
+        IN_PLAY_GLOBAL_EFFECT,
+        INSTANT,
+        LEAVES_PLAY
     }        
+    
+    /** @brief Enum characterising all possible states of game.
+     *  Game states represents real game states in game Magic the Gathering.
+     *  This enumeration purpose is to determine behaviour of cards that depend on game state.
+     *  For example creature can use attack only during attack step, but abilities can be used nearly anytime.
+     */
+    enum gameState{
+        UNTAP,
+        UPKEEP,
+        DRAW,
+        MAIN_PHASE,
+        ATTACK
+    }
     
     static int enemyPlPreviewPosX;
     static int enemyPlPreviewPosY;
     static int playerPreviewPosX;
     static int playerPreviewPosY;
     static Player currentPlayer; /**< Variable storing pointer to currnt player.*/
+    static public Map<Game.cardProperties,CreatureDecorator> propertyStorage; /**< Collection processing conversion between names of card properties and have stored pointers to them.*/
     static public Map<String,Game.cardType> cardTypeTranslator; /**< Collection processing conversion between string name from input file to enum, which represent type of creature.*/
     static public Map<String,Game.cardProperties> propertyTranslator; /**< Collection processing conversion between string name from input file to enum, which represent names of card properties.*/
     static public Map<Game.composition,JPanel> GUIComposition = new HashMap<>();/**< Collection to map GUI components. Ease access throughout the game.*/
@@ -175,10 +190,12 @@ public class Game {
         inputTagTranslator.put("power", Game.inputTags.POWER);
         inputTagTranslator.put("toughness", Game.inputTags.TOUGHNESS);
         
-        inpBoostUsAblTransl.put("inPlay", Game.boostUsabil.IN_PLAY);
+        inpBoostUsAblTransl.put("inPlay", Game.boostUsabil.IN_PLAY_GLOBAL_EFFECT);
         inpBoostUsAblTransl.put("attack", Game.boostUsabil.ATTACK);
         inpBoostUsAblTransl.put("instant",Game.boostUsabil.INSTANT);
         inpBoostUsAblTransl.put("comeIntoPlay", Game.boostUsabil.COMES_INTO_PLAY);
+        inpBoostUsAblTransl.put("leavesPlay", Game.boostUsabil.LEAVES_PLAY);
+        
     }
 
 }
