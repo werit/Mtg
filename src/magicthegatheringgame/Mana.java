@@ -32,18 +32,4 @@ public class Mana extends Card{
         this.swampCost = 0;
         this.forestCost = 0;
     }
-    
-    @Override
-    void onTap(Game.gameState state){
-        switch(state){
-            case ATTACK:
-                if(abilUse.get(Game.boostUsabil.ATTACK)!= null){
-                    
-                }
-                default:
-                    break;
-        }
-        for (abilUse.keySet())
-            
-    }
 }

@@ -51,27 +51,5 @@ public class Creature extends Card {
     void accept(FirstStrike ability){
         ability.visit(this);
     }    
-    @Override
-    void onTap(Game.gameState state){
-        ArrayList<Game.cardProperties> abil;
-        switch(state){
-            case ATTACK:
-                abil = abilUse.get(Game.boostUsabil.ATTACK);
-                if(abil != null){
-                   for (int i = 0; i < abil.size();++i){
-                       Game.propertyStorage.get(abil.get(i)).visit(this);
-                   } 
-                }
-                default:
-                abil = abilUse.get(Game.boostUsabil.INSTANT);
-                if(abil != null){
-                   for (int i = 0; i < abil.size();++i){
-                       Game.propertyStorage.get(abil.get(i)).visit(this);
-                   } 
-                }
-                    break;
-        }
-        
-            
-    }
+
 }

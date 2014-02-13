@@ -6,15 +6,11 @@
 
 package magicthegatheringgame;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 /**
  *
  * @author msi
  */
-public abstract class CreatureDecorator {
-    
+public abstract class CreatureDecorator {    
     public void visit(Creature card){
         
     }

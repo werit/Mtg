@@ -21,10 +21,15 @@ public class OUtput {
         
     }
     
+    /** @brief Method showing all possible choices of 
+     * 
+     */
     public static void showChoices(){
         
     }
-    
+    public static void errCanotTap(){
+        
+    }
     static {
         choices = new ArrayList<>();
     }

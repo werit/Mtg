@@ -29,6 +29,8 @@ public abstract class Card{
     byte swampCost;
     byte forestCost;
     
+    JLabel fileSource;
+    
     void visit(Untap untap){}
     void visit(Upkeep up){}
     void visit(Draw dr){}
@@ -46,7 +48,61 @@ public abstract class Card{
     void accept(FirstStrike ability){
         ability.visit(this);
     }
+    /** @brief Method handling tapping of card.
+     *  When executed method behaves in two directions depending on game state.
+     *  If during attack, then call all anytime usable abilities and attack abilities otherwise call only anytime usable abilities.
+     * @param state Parameter defining in which game state is currently game
+     */
+    void onTap(Game.gameState state){
+        ArrayList<Game.cardProperties> abil = new ArrayList<>();
+        assert (isTapAble);
+        switch(state){
+            case ATTACK:
+                abil.addAll(abilPerBoostState(Game.boostUsabil.ATTACK));
+                abil.addAll(abilPerBoostState(Game.boostUsabil.INSTANT));
+                abilChoices(abil);
+                break;
+            default:
+                abil.addAll(abilPerBoostState(Game.boostUsabil.INSTANT));
+                abilChoices(abil);
+                break;
+        }
+    }      
+            
+
+    /** @brief Method testing presence of array assigned to key given as parameter.
+     *  
+     * @param state Parameter carries name of key, which is to be tested.
+     * @return Method returns array assigned to key or new empty array. Never null.
+     */
+    ArrayList<Game.cardProperties> abilPerBoostState(Game.boostUsabil state){
+        if(abilUse.containsKey(state)){
+            return abilUse.get(state);
+        }
+        else 
+            return new ArrayList<>();
+    }
     
-    abstract void onTap(Game.gameState state);
-    JLabel fileSource;
+    /** @brief Method deciding what to do with usable methods of card.
+     *  There are three possibilities what can happen.
+     *  If zero abilities is present, then card cannot be used.
+     *  If one, then use that ability.
+     *  If more, then choose which one.
+     * @param possibleProp Array of all found abilities, that can be used during this state of game.
+     */
+    void abilChoices(ArrayList<Game.cardProperties> possibleProp){
+        switch(possibleProp.size()){
+                    case 0:
+                        OUtput.errCanotTap();
+                        break;
+                    case 1:
+                        Game.propertyStorage.get(possibleProp.get(0)).visit(this);
+                        break;
+                    default:
+                        OUtput.addChoices(possibleProp);
+                        OUtput.showChoices();
+                        break;
+                }
+    }
+
 }
