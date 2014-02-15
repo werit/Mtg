@@ -97,7 +97,8 @@ public class Game {
     enum cardProperties{
         HASTE,
         FIRST_STRIKE,
-        POWER_BOOST
+        POWER_BOOST,
+        WHITE_MANA
     }    
     
     /** @brief List containing all input tags with readable content.
@@ -140,14 +141,16 @@ public class Game {
         UPKEEP,
         DRAW,
         MAIN_PHASE,
-        ATTACK
+        ATTACK,
+        DEFENSE
     }
     
     static int enemyPlPreviewPosX;
     static int enemyPlPreviewPosY;
     static int playerPreviewPosX;
     static int playerPreviewPosY;
-    static Player currentPlayer; /**< Variable storing pointer to currnt player.*/
+    static gameState state; /**< Static variable characterising state of round.*/
+    static byte currentPlayer; /**< Variable storing number characterising player currently playing. By this number player can be found in .*/
     static public Map<Game.cardProperties,CreatureDecorator> propertyStorage; /**< Collection processing conversion between names of card properties and have stored pointers to them.*/
     static public Map<String,Game.cardType> cardTypeTranslator; /**< Collection processing conversion between string name from input file to enum, which represent type of creature.*/
     static public Map<String,Game.cardProperties> propertyTranslator; /**< Collection processing conversion between string name from input file to enum, which represent names of card properties.*/
@@ -158,8 +161,11 @@ public class Game {
     
     /** @brief static initialiser filling all HashMaps used as dictionaries.
      *  Method define how will conversion look like. Which means, if string in input file should be changed so must be his conversion to enum definition be changed.
+     *  If any new ability is created it is necessary to add it translation.
      */
     static {
+        state = gameState.UNTAP;
+        
         cardTypeTranslator = new HashMap<>();
         propertyTranslator = new HashMap<>();
         inputTagTranslator = new HashMap<>();
@@ -176,6 +182,7 @@ public class Game {
         propertyTranslator.put("Haste", cardProperties.HASTE);
         propertyTranslator.put("FirstStrike", cardProperties.FIRST_STRIKE);
         propertyTranslator.put("PowerBoost", cardProperties.POWER_BOOST);
+        propertyTranslator.put("WhiteMana", cardProperties.WHITE_MANA);
         
         inputTagTranslator.put("white", Game.inputTags.WHITE);
         inputTagTranslator.put("black", Game.inputTags.BLACK);

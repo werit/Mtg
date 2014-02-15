@@ -6,9 +6,6 @@
 
 package magicthegatheringgame;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 /** @brief Add/move attacker to array of first strikers.
      *  First strike grants creature ability to strike earlier then creature without first strike.
      *  For this reason there is specially designed array contained in class Player. 
@@ -18,10 +15,11 @@ import java.util.Map;
 public class FirstStrike extends CreatureDecorator{
     @Override
     public void visit(Creature card){
-         assert(Game.currentPlayer != null);
-         if (card.controller == Game.currentPlayer)
+        assert(card.isTapAble == true && card.isTapped == false);
+         if (Game.state.equals(Game.gameState.ATTACK))
              Battleground.fighters.get(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER).add(card);
          else
              Battleground.fighters.get(Game.battlefieldStirikes.FIRST_STRIKE_DEFENDER).add(card);
+         card.isTapped = true;
     }
 }

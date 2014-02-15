@@ -46,12 +46,13 @@ public class Data {
     Data(){
         rand = new Random();
         players = new Player[2];
-        try {
+        try{
             inicCardsPicture();
-        } catch (Exception ex) {
-            System.out.println("Program cannot proceed due to error(s)");
         }
-        
+        catch (Exception e){
+            System.err.println("ERROR.");
+            e.printStackTrace();
+        }
     }
     
     public void addComponentsToPane(Container pane) {
@@ -174,32 +175,17 @@ public class Data {
     pane.add(cardPreview, c);
     }
     void inicCardsPicture() throws Exception{
-       // try{
-          /*  BufferedImage image = ImageIO.read(new File("C:\\Users\\msi\\Documents\\NetBeansProjects\\200px-Magic_the_gathering-card_back.jpg"));
-            Image resizedimg = image.getScaledInstance(50, 50, 0);
-            Card c = new Card(); 
-            c.fileSource = new JLabel(new ImageIcon(resizedimg));
-            //c.fileSorce.setPreferredSize(new Dimension(100,100));
-            allCards.add(c);
-            ImageIcon cardBack = new ImageIcon(image);
-            c = new Card();
-            c.fileSource = new JLabel(cardBack);
-            allCards.add(c);
-            c = new Card();
-            c.fileSource = new JLabel(cardBack);
-            allCards.add(c);
-            c = new Card();
-            c.fileSource = new JLabel(cardBack);
-            allCards.add(c);
-            c = new Card();
-            c.fileSource = new JLabel(cardBack);
-            allCards.add(c);*/
-        //}
-        /*catch(IOException e){
+        try{
+            BufferedImage image = ImageIO.read(new File("D:\\Source pictures\\back.jpg"));
+            Image resizedimg = image.getScaledInstance(100, 50, 0);
+            backPict = new JLabel(new ImageIcon(resizedimg));
+        }
+        catch(IOException e){
             System.out.println("Nastala chyba :" + e.toString());
             throw new Exception();
-        }*/
+        }
     }
+    JLabel backPict;
     Player[] players;
     Random rand;
     Cast cast;

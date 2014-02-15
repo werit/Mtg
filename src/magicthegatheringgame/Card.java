@@ -4,15 +4,20 @@
  */
 package magicthegatheringgame;
 
+import java.awt.Event;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  *
  * @author werit
  */
-public abstract class Card{
+public abstract class Card extends JPanel{
+   
+
+    
     Game.cardType type;
     protected Player owner;
     protected Player controller;

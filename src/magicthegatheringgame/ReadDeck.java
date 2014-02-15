@@ -162,7 +162,7 @@ public class ReadDeck extends DefaultHandler {
     private JLabel inicCardsPicture(String path){
         try{
             BufferedImage image = ImageIO.read(new File(path));
-            Image resizedimg = image.getScaledInstance(50, 50, 0);
+            Image resizedimg = image.getScaledInstance(100, 50, 0);
             return new JLabel(new ImageIcon(resizedimg));    
         }
         catch(IOException e){

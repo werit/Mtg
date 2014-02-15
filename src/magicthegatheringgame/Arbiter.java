@@ -9,6 +9,7 @@ package magicthegatheringgame;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -160,9 +161,11 @@ public class Arbiter {
         ReadDeck.readDeckMain("C:\\Users\\msi\\Documents\\NetBeansProjects\\MagicTheGatheringGame\\src\\magicthegatheringgame\\deck1.xml",data.players[0]);
         ReadDeck.readDeckMain("C:\\Users\\msi\\Documents\\NetBeansProjects\\MagicTheGatheringGame\\src\\magicthegatheringgame\\deck1.xml",data.players[1]);
         
+        addToPanel(Game.GUIComposition.get(Game.composition.HAND_OP),new JLabel[]{ data.backPict,data.backPict});
+        
         // set beginning player
         order = 0;
-        Game.currentPlayer = data.players[order];
+        Game.currentPlayer = (byte)order;
         
      }
      
@@ -174,18 +177,20 @@ public class Arbiter {
          
          // resst of the round
          order = (order+1)%2;
-         Game.currentPlayer = data.players[order];
+         Game.currentPlayer = (byte)order;
      }
     
      /**
       * Method when card is cast into play.
       */
      private void cardCast(Card card){
-         switch(card.type){
-             case CREATURE:
-                 card.controller.addAttackerAndDef(card);
-                 break;
-         }
+         ArrayList<Game.cardProperties> abil;
+                 abil = card.abilUse.get(Game.boostUsabil.COMES_INTO_PLAY);
+                 if (abil != null){
+                     for(int i = 0;i < abil.size();++i){
+                         Game.propertyStorage.get(abil.get(i)).visit(card);
+                     }
+                 }
      }
      
     /** @brief Method representing and process untap phase of game.

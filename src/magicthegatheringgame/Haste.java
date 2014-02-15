@@ -7,10 +7,15 @@
 package magicthegatheringgame;
 
 /** @brief Class of decorator design patter. Granting haste ability to creature.
- *  Haste class add creature ability to attack this turn.
+ *  Haste class add creature ability to attack or use abilities this turn.
  */
 public class Haste extends CreatureDecorator{
+    /** @brief Method of visitor pattern handling haste ability of creature.
+     *  Method calls method of player handling creatures which can use abilities immedietally.
+     * @param card Card with this ability.
+     */
+    @Override
     public void visit(Creature card){
-        
+        card.controller.addAttackerAndDef(card);
     }
 }
