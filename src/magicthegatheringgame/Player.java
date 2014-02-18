@@ -26,6 +26,7 @@ public class Player {
         swampPoolPlayer = 0;
         forestPoolPlayer = 0;
         colorlessPoolPlayer = 0;
+        lifes = 20;
         hand = new ArrayList<>(150);
         deck = new ArrayList<>(150);
         creatures = new HashMap<>();
@@ -132,6 +133,26 @@ public class Player {
     void remColorless(byte count){
         colorlessPoolPlayer -= count;
     }
+    /** @brief Method to reveal current amount of white mana in pool.
+     */
+    int getPlainCount(){
+        return plainPoolPlayer;
+    }
+    int getMountainCount(){
+       return mountainPoolPlayer;
+    }
+    int getIslandCount(){
+       return islandPoolPlayer;
+    }
+    int getSwampCount(){
+        return swampPoolPlayer;
+    }
+    int getForestCount(){
+        return forestPoolPlayer;
+    }
+    int getColorlessCount(){
+        return colorlessPoolPlayer;
+    }
     void draw(byte drawn){
         /*
          * some abilities make you draw multiple cards
@@ -155,7 +176,7 @@ public class Player {
         lifes += subtractor;
     }
     
-    public byte getLifes(){ /**< public API for getting actual ammount of lifes. */
+    public int getLifes(){ /**< public API for getting actual ammount of lifes. */
         return lifes;
     }
     
@@ -169,7 +190,7 @@ public class Player {
     private ArrayList<Card> pernamentEffects; /**< Here are stored all cards that are influenced by coming of other cardst to play. */
     private ArrayList<Card> hand; /**> Cards on hand of this player.*/
     ArrayList<Card> deck; /**> Cards in library of this player.*/
-    private byte lifes; /**< Ammount of lifes of player.*/
+    private int lifes; /**< Ammount of lifes of player.*/
     private byte indexOfCardToDraw;
     private byte colorlessPoolPlayer;
     private byte mountainPoolPlayer;

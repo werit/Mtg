@@ -39,7 +39,6 @@ public class MagicTheGatheringGame {
         //Data data = new Data();
         //data.addComponentsToPane(frame.getContentPane());
         Arbiter arb = new Arbiter(frame);
-        arb.createnviroment();
         arb.arbitGame();
         frame.pack();
         // maximalize to whole screen
