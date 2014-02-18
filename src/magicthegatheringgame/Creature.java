@@ -4,14 +4,8 @@
  */
 package magicthegatheringgame;
 
-import java.util.ArrayList;
-import java.util.Map;
 import javax.swing.JLabel;
 
-/**
- *
- * @author werit
- */
 public class Creature extends Card {
     private byte power;
     private byte toughness;

@@ -55,7 +55,7 @@ public class Data {
         }
     }
     
-    public void addComponentsToPane(Container pane) {
+   /* public void addComponentsToPane(Container pane) {
     if (RIGHT_TO_LEFT) {
         pane.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
     }
@@ -173,19 +173,40 @@ public class Data {
     c.gridy = 3;
     c.gridwidth = 3; 
     pane.add(cardPreview, c);
-    }
+    }*/
     void inicCardsPicture() throws Exception{
         try{
-            BufferedImage image = ImageIO.read(new File("D:\\Source pictures\\back.jpg"));
-            Image resizedimg = image.getScaledInstance(100, 50, 0);
-            backPict = new JLabel(new ImageIcon(resizedimg));
+            cardBack = assignProperImage("D:\\Source pictures\\back.jpg", 110*2/3, 153*2/3);
+            /*BufferedImage image = ImageIO.read(new File("D:\\Source pictures\\back.jpg"));
+            Image resizedimg = image.getScaledInstance(220/2,305/2,0);//(image.getHeight() / 2, image.getWidth() / 2, 0); TODO !!!
+            cardBack = new ImageIcon(resizedimg);*/
+            cardBackEmpty = assignProperImage("D:\\Source pictures\\backEmpty.png", 110*2/3, 153*2/3);
+            blackMana = assignProperImage("D:\\Source pictures\\Black.png", 40,40);
+            blueMana = assignProperImage("D:\\Source pictures\\Blue.png", 40,40);
+            greenMana = assignProperImage("D:\\Source pictures\\Green.png", 40,40);
+            whiteMana = assignProperImage("D:\\Source pictures\\White.png", 40,40);
+            redMana = assignProperImage("D:\\Source pictures\\Red.png", 40,40);
+            colourlessMana = assignProperImage("D:\\Source pictures\\Colorless.png", 40,40);
         }
         catch(IOException e){
             System.out.println("Nastala chyba :" + e.toString());
             throw new Exception();
         }
     }
-    JLabel backPict;
+    
+    private ImageIcon assignProperImage(String path,int pictWidth,int pictHeight) throws Exception{
+        return new ImageIcon(ImageIO.read(new File(path)).getScaledInstance(pictWidth, pictHeight, 0));
+    }
+            
+            
+    ImageIcon cardBack;
+    ImageIcon cardBackEmpty;
+    ImageIcon whiteMana;
+    ImageIcon blackMana;
+    ImageIcon greenMana;
+    ImageIcon blueMana;
+    ImageIcon redMana;
+    ImageIcon colourlessMana;
     Player[] players;
     Random rand;
     Cast cast;

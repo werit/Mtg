@@ -7,6 +7,7 @@
 package magicthegatheringgame;
 
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
@@ -27,9 +28,9 @@ public class Arbiter {
     private int order;
     Arbiter(JFrame pane){
         this.pane = pane;
+        data = new Data();
     }
     public void arbitGame(){
-        data = new Data();
         initializeGamePLay();
         //data.addComponentsToPane(pane.getContentPane());
     }
@@ -47,29 +48,48 @@ public class Arbiter {
         constr.gridx = 0;
         constr.gridy = 0;
         constr.gridheight = 1;
-        constr.gridwidth = 2; // hovorim, ze bude zaberat dve policka. Potom nesmiem zabudnut nastavit scrollpanel na 8, aby sa spravil spravny pomer.
+        constr.gridwidth = 1; // hovorim, ze bude zaberat jedno policko. Potom nesmiem zabudnut nastavit scrollpanel na 8, aby sa spravil spravny pomer.
         constr.ipady = 10;
         constr.weightx = 0; // do not give any free space event if there is some.
         constr.weighty = 0;
         
         // Library_op
-        createPanelAndComponents(0, 0, new JLabel[]{new JLabel("Library"),new JLabel("Lifes")},Game.composition.LIBRABRY_OP);
+        createPanelAndComponents(0, 0, new JLabel[]{new JLabel(data.cardBack)},Game.composition.LIBRABRY_OP);
         
         //Grave_op
-        createPanelAndComponents(0, 1, new JLabel[]{new JLabel("Grave_op"),new JLabel("Manas")},Game.composition.GRAVE_OP);
+        createPanelAndComponents(0, 3, new JLabel[]{new JLabel(data.cardBackEmpty)},Game.composition.GRAVE_OP);
         
         //RFG_op
-        createPanelAndComponents(0, 2, new JLabel[]{new JLabel("RFG"),new JLabel("empty")},Game.composition.RFG_OP);
+        createPanelAndComponents(0, 5, new JLabel[]{new JLabel(data.cardBackEmpty)},Game.composition.RFG_OP);
         
         //RFG_cp
-        createPanelAndComponents(0, 3, new JLabel[]{new JLabel("RFG"),new JLabel("empty")},Game.composition.RFG_OP);
+        createPanelAndComponents(0, 7, new JLabel[]{new JLabel(data.cardBackEmpty)},Game.composition.RFG_OP);
         
          //Grave_op
-        createPanelAndComponents(0, 4, new JLabel[]{new JLabel("Grave_op"),new JLabel("Manas")},Game.composition.GRAVE_CP);
+        createPanelAndComponents(0, 9, new JLabel[]{new JLabel(data.cardBackEmpty)},Game.composition.GRAVE_CP);
         
         // Library_op
-        createPanelAndComponents(0, 5, new JLabel[]{new JLabel("Library"),new JLabel("Lifes")},Game.composition.LIBRARY_CP);
+        createPanelAndComponents(0, 11, new JLabel[]{new JLabel(data.cardBack)},Game.composition.LIBRARY_CP);
         
+        constr.gridheight = 1;
+        constr.gridwidth = 1; // hovorim, ze bude zaberat jedno policko. Potom nesmiem zabudnut nastavit scrollpanel na 8, aby sa spravil spravny pomer.
+        constr.ipady = 10;
+        constr.weightx = 0; // do not give any free space event if there is some.
+        constr.weighty = 0;       
+        
+        JLabel[] labels = new JLabel[]{
+            new JLabel("Lifes"),new JLabel(data.blackMana),new JLabel(data.whiteMana),
+            new JLabel(data.greenMana),new JLabel(data.blueMana),
+            new JLabel(data.redMana),new JLabel(data.colourlessMana),
+            new JLabel(data.colourlessMana),new JLabel(data.redMana),
+            new JLabel(data.blueMana),new JLabel(data.greenMana),
+            new JLabel(data.whiteMana),new JLabel(data.blackMana),new JLabel("Lifes")
+        };
+        
+        for(int i = 0; i< labels.length;++i){
+            createPanelAndComponents(2, i+1, new JLabel[]{labels[i]}, null);
+        }
+  
         constr.gridheight = 1;
         constr.gridwidth = 8; // hovorim, ze bude zaberat dve policka. Potom nesmiem zabudnut nastavit scrollpanel na 8, aby sa spravil spravny pomer.
         constr.ipady = 10;
@@ -77,22 +97,22 @@ public class Arbiter {
         constr.weighty = 0;
         
         // Hand_op
-        createScrollAndComponents(2, 0, new JLabel[]{new JLabel("Card1"),new JLabel("Card2")},Game.composition.HAND_OP);
+        createScrollAndComponents(Game.shift, 0, new JLabel[]{new JLabel(data.cardBack),new JLabel("Card2")},Game.composition.HAND_OP);
         
         // Manas_op
-        createScrollAndComponents(2, 1, new JLabel[]{new JLabel("Mana1"),new JLabel("Mana2")},Game.composition.LANDS_OP);
+        createScrollAndComponents(Game.shift, 1, new JLabel[]{new JLabel("Mana1"),new JLabel("Mana2")},Game.composition.LANDS_OP);
         
         // Creatures_op
-        createScrollAndComponents(2, 2, new JLabel[]{new JLabel("Creature1"),new JLabel("Creature2")},Game.composition.CREATURES_OP);
+        createScrollAndComponents(Game.shift, 2, new JLabel[]{new JLabel("Creature1"),new JLabel("Creature2")},Game.composition.CREATURES_OP);
         
          // Creatures_cp
-        createScrollAndComponents(2, 3, new JLabel[]{new JLabel("Creature1.1"),new JLabel("Creature2.1")},Game.composition.CREATURES_OP);
+        createScrollAndComponents(Game.shift, 3, new JLabel[]{new JLabel("Creature1.1"),new JLabel("Creature2.1")},Game.composition.CREATURES_OP);
         
         // Manas_cp
-        createScrollAndComponents(2, 4, new JLabel[]{new JLabel("Mana1"),new JLabel("Mana2")},Game.composition.LANDS_OP);
+        createScrollAndComponents(Game.shift, 4, new JLabel[]{new JLabel("Mana1"),new JLabel("Mana2")},Game.composition.LANDS_OP);
         
         // Hand_cp
-        createScrollAndComponents(2, 5, new JLabel[]{new JLabel("Card1"),new JLabel("Card2")},Game.composition.HAND_OP);
+        createScrollAndComponents(Game.shift, 5, null,Game.composition.HAND_OP);
 
         addToPanel(Game.GUIComposition.get(Game.composition.HAND_OP),new JLabel[]{ new JLabel("testing")});
 
@@ -107,10 +127,12 @@ public class Arbiter {
      */
     private void createPanelAndComponents(int pos_x,int pos_y,JLabel[] labels,Game.composition pos_name){
         JPanel jp = new JPanel();
+        // jp.processMouseEvent TODO !!!
         addToPanel(jp,labels);
         constr.gridx = pos_x;
         constr.gridy = pos_y;
-        Game.GUIComposition.put(pos_name, jp);
+        if (pos_name != null)
+            Game.GUIComposition.put(pos_name, jp);
         pane.add(jp,constr);
     }
     
@@ -123,8 +145,8 @@ public class Arbiter {
      */
     private void createScrollAndComponents(int pos_x,int pos_y,JLabel[] labels,Game.composition pos_name){
         JScrollPane compPanel = new JScrollPane();
+        compPanel.setPreferredSize(new Dimension(100, 100));
         JPanel inside = new JPanel();
-        
         compPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         compPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         addToPanel(inside,labels);
@@ -143,9 +165,10 @@ public class Arbiter {
      * @return Filled JPane
      */
     private void addToPanel(JPanel jpToFill,JLabel[] labels){      
-        for (int i = 0; i < labels.length; ++i) {
-            jpToFill.add(labels[i]);
-        }
+        if(labels != null)
+            for (int i = 0; i < labels.length; ++i) {
+                jpToFill.add(labels[i]);
+            }
         
     }
     
@@ -161,7 +184,7 @@ public class Arbiter {
         ReadDeck.readDeckMain("C:\\Users\\msi\\Documents\\NetBeansProjects\\MagicTheGatheringGame\\src\\magicthegatheringgame\\deck1.xml",data.players[0]);
         ReadDeck.readDeckMain("C:\\Users\\msi\\Documents\\NetBeansProjects\\MagicTheGatheringGame\\src\\magicthegatheringgame\\deck1.xml",data.players[1]);
         
-        addToPanel(Game.GUIComposition.get(Game.composition.HAND_OP),new JLabel[]{ data.backPict,data.backPict});
+        addToPanel(Game.GUIComposition.get(Game.composition.HAND_OP),new JLabel[]{ new JLabel(data.cardBack),new JLabel(data.cardBack)});
         
         // set beginning player
         order = 0;

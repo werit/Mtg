@@ -149,6 +149,7 @@ public class Game {
     static int enemyPlPreviewPosY;
     static int playerPreviewPosX;
     static int playerPreviewPosY;
+    static int shift; /**< Variable storing value of shift of scroll panels on game board.*/
     static gameState state; /**< Static variable characterising state of round.*/
     static byte currentPlayer; /**< Variable storing number characterising player currently playing. By this number player can be found in .*/
     static public Map<Game.cardProperties,CreatureDecorator> propertyStorage; /**< Collection processing conversion between names of card properties and have stored pointers to them.*/
@@ -165,6 +166,7 @@ public class Game {
      */
     static {
         state = gameState.UNTAP;
+        shift = 3;
         
         cardTypeTranslator = new HashMap<>();
         propertyTranslator = new HashMap<>();
