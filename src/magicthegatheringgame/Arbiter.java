@@ -33,9 +33,25 @@ public class Arbiter {
     public void arbitGame(){
         initializeGamePLay();
         createnviroment();
+        play();
         //data.addComponentsToPane(pane.getContentPane());
     }
-    
+    private void play(){
+        Card card;
+        for (int i = 0; i < 7; ++i) {
+            card = data.players[Game.currentPlayer].draw();
+            if(card != null)
+                addToPanel(Game.GUIComposition.get(Game.composition.HAND_CP),new JLabel[]{card.fileSource});
+            else{
+                JPanel jp = Game.GUIComposition.get(Game.composition.LIBRARY_CP);
+                jp.removeAll();
+                jp.add(new JLabel(data.cardBackEmpty));
+                jp.revalidate();
+                OUtput.lostTheGame();
+                break;
+            }
+        }
+    }
     private void createnviroment(){
         /* TODO 
             zistenie pouzitelnej velkosti a funkciu na prepocet velkosti jednotlivych komponent
@@ -92,7 +108,7 @@ public class Arbiter {
         Player currPl = data.players[Game.currentPlayer];
         Player currOp = data.players[(Game.currentPlayer+1)%2]; 
         
-        
+        // prepare values to be displayed by default
         int[] values = {currOp.getLifes(),currOp.getSwampCount(),currOp.getPlainCount(),currOp.getForestCount(),
             currOp.getIslandCount(),currOp.getMountainCount(),currPl.getColorlessCount(),currPl.getColorlessCount(),
             currPl.getIslandCount(),currPl.getMountainCount(),currPl.getForestCount(),currPl.getPlainCount(),currPl.getSwampCount(),
@@ -118,7 +134,7 @@ public class Arbiter {
         // Hand_op
         createScrollAndComponents(Game.shift, 0, new JLabel[]{new JLabel(data.cardBack),new JLabel("Card2")},Game.composition.HAND_OP);
          // Hand_currPl
-        createScrollAndComponents(Game.shift, 11, null,Game.composition.HAND_OP);
+        createScrollAndComponents(Game.shift, 11,null,Game.composition.HAND_CP);
         
         constr.gridheight = 2;
         
@@ -167,7 +183,7 @@ public class Arbiter {
      */
     private void createScrollAndComponents(int pos_x,int pos_y,JLabel[] labels,Game.composition pos_name){
         JScrollPane compPanel = new JScrollPane();
-        compPanel.setPreferredSize(new Dimension(100, 100));
+        compPanel.setPreferredSize(new Dimension(800, 150));
         JPanel inside = new JPanel();
         compPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         compPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -187,9 +203,11 @@ public class Arbiter {
      * @return Filled JPane
      */
     private void addToPanel(JPanel jpToFill,JLabel[] labels){      
+        assert (jpToFill != null);
         if(labels != null)
             for (int i = 0; i < labels.length; ++i) {
-                jpToFill.add(labels[i]);
+                if(labels[i] != null)
+                    jpToFill.add(labels[i]);
             }
         
     }

@@ -9,20 +9,14 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.helpers.DefaultHandler;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -62,6 +56,7 @@ public class ReadDeck extends DefaultHandler {
         //this.owner.deck = owner.deck;
         proper = new ArrayList<>();
         allCardProp = new HashMap<>();
+        
     }
      @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
@@ -145,25 +140,25 @@ public class ReadDeck extends DefaultHandler {
     public void endDocument() throws SAXException {
     }
     private void createCreatures(Player owner,byte power ,byte toughness){
-            JLabel pict = inicCardsPicture(picturePath);
+            ImageIcon pict = inicCardsPicture(picturePath);
 
             for (byte i = 0; i < tagValue.get(Game.inputTags.COUNT);++i){
-                Card c = new Creature(cardName,owner,pict,tagValue.get(Game.inputTags.WHITE),tagValue.get(Game.inputTags.BLACK),
+                Card c = new Creature(cardName,owner,new JLabel(pict),tagValue.get(Game.inputTags.WHITE),tagValue.get(Game.inputTags.BLACK),
                                 tagValue.get(Game.inputTags.GREEN),tagValue.get(Game.inputTags.BLUE),tagValue.get(Game.inputTags.RED),
                                 tagValue.get(Game.inputTags.COLOURLESS),power,toughness);
                 for (int j = 0; j < proper.size(); ++j) {
-                    c.abilUse = new HashMap<>(allCardProp);
+                    c.abilUse = new HashMap<>(allCardProp);   
                 }
-                
+                 c.addMouseListener(Game.mousLis);
                 this.owner.deck.add(c);          
         }
     }
     
-    private JLabel inicCardsPicture(String path){
+    private ImageIcon inicCardsPicture(String path){
         try{
             BufferedImage image = ImageIO.read(new File(path));
-            Image resizedimg = image.getScaledInstance(100, 50, 0);
-            return new JLabel(new ImageIcon(resizedimg));    
+            Image resizedimg = image.getScaledInstance(Game.pictWidth, Game.pictHeight, 0);
+            return new ImageIcon(resizedimg);    
         }
         catch(IOException e){
             System.out.println("Nastala chyba :" + e.toString());

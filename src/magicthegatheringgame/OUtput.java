@@ -30,6 +30,9 @@ public class OUtput {
     public static void errCanotTap(){
         
     }
+    public static void lostTheGame(){
+        
+    }
     static {
         choices = new ArrayList<>();
     }

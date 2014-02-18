@@ -11,6 +11,7 @@ public class Creature extends Card {
     private byte toughness;
 
     public Creature(String cardName,Player owner,JLabel pict,byte whitenCst,byte blackpCst,byte greenCst,byte blueCst,byte redCst,byte colorlessCst,byte power, byte toughness) {
+        super(pict);
         super.cardName = cardName;
         super.isTapAble = true;
         super.owner = owner;

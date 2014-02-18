@@ -19,6 +19,7 @@ public class Mana extends Card{
      * 
      */
     Mana(String cardName,Player owner,JLabel pict){
+        super(pict);
         super.cardName = cardName;
         super.isTapAble = true;
         super.owner = owner;

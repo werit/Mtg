@@ -6,6 +6,7 @@
 
 package magicthegatheringgame;
 
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -149,6 +150,8 @@ public class Game {
     static int enemyPlPreviewPosY;
     static int playerPreviewPosX;
     static int playerPreviewPosY;
+    static int pictWidth; /**< Variable defining width of cards.*/
+    static int pictHeight; /**< Variable defining height of cards.*/
     static int shift; /**< Variable storing value of shift of scroll panels on game board.*/
     static gameState state; /**< Static variable characterising state of round.*/
     static byte currentPlayer; /**< Variable storing number characterising player currently playing. By this number player can be found in .*/
@@ -159,7 +162,7 @@ public class Game {
     static public ArrayList<Exception> exceptTrack; /**< Collection of all exceptions thrown during run.*/
     static public Map<String,Game.inputTags> inputTagTranslator; /**< Collection processing conversion between string to enum mapping input tags. */
     static public Map<String,Game.boostUsabil> inpBoostUsAblTransl; /**< Collection processing conversion between string to enum mapping input attribute usAble of tag boost */
-    
+    static public MouseAdapter mousLis; /**< Variable granting global acces to mouse listener.*/
     /** @brief static initialiser filling all HashMaps used as dictionaries.
      *  Method define how will conversion look like. Which means, if string in input file should be changed so must be his conversion to enum definition be changed.
      *  If any new ability is created it is necessary to add it translation.
@@ -167,6 +170,11 @@ public class Game {
     static {
         state = gameState.UNTAP;
         shift = 3;
+        
+        pictWidth = 110*2/3;
+        pictHeight = 153*2/3;
+        
+        mousLis = new MouseAdapterMod();
         
         cardTypeTranslator = new HashMap<>();
         propertyTranslator = new HashMap<>();

@@ -153,13 +153,17 @@ public class Player {
     int getColorlessCount(){
         return colorlessPoolPlayer;
     }
-    void draw(byte drawn){
-        /*
-         * some abilities make you draw multiple cards
-         */
-        for(byte i = 0; i < drawn;++i){
-            hand.add(deck.get(indexOfCardToDraw++));
+    
+    Card draw(){
+        Card card;
+        if(deck.size() > indexOfCardToDraw){
+            card = deck.get(indexOfCardToDraw++);
+            hand.add(card);
+            return card;
         }
+        else
+            return null;
+        
     }
     void discard(byte[] cardsToDiscard){
         // gets array of index of cards to be discarded

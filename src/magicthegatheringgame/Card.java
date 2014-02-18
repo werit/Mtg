@@ -35,7 +35,10 @@ public abstract class Card extends JPanel{
     byte forestCost;
     
     JLabel fileSource;
-    
+    protected Card(JLabel pict){
+        fileSource = pict;
+        add(pict);
+    }
     void visit(Untap untap){}
     void visit(Upkeep up){}
     void visit(Draw dr){}
