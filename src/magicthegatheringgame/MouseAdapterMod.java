@@ -17,7 +17,15 @@ public class MouseAdapterMod extends MouseAdapter {
 @Override
 public void mousePressed(MouseEvent e) {
     Card card = (Card)e.getSource();
-    card.onTap(Game.state);
+    switch(card.cardLoc){
+        case IN_HAND:
+            card.cardCast();
+            break;
+        case IN_PLAY:
+            card.onTap(Game.state);
+            break;
+    }
+    
     System.out.println("klikkk");
    }
 }

@@ -145,6 +145,18 @@ public class Game {
         ATTACK,
         DEFENSE
     }
+    /** @brief Enumeration stating where is the card in game.
+     *  When card is read, it is assigned it's location in the deck.
+     *  Later on, this position is changing depending on play.
+     *  For example, when card drawn, then location changes from #IN_DECK to #IN_HAND
+     */
+    enum cardLocation{
+        IN_HAND,
+        IN_PLAY,
+        IN_GRAVE,
+        IN_RFG_PILE,
+        IN_DECK
+    }
     
     static int enemyPlPreviewPosX;
     static int enemyPlPreviewPosY;

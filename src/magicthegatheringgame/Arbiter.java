@@ -22,9 +22,9 @@ import javax.swing.JScrollPane;
  * @author Werit
  */
 public class Arbiter {
-    private JFrame pane;
+    private final JFrame pane;
     private GridBagConstraints constr;
-    private Data data;
+    private final Data data;
     private int order;
     Arbiter(JFrame pane){
         this.pane = pane;
@@ -40,8 +40,9 @@ public class Arbiter {
         Card card;
         for (int i = 0; i < 7; ++i) {
             card = data.players[Game.currentPlayer].draw();
-            if(card != null)
-                addToPanel(Game.GUIComposition.get(Game.composition.HAND_CP),new JLabel[]{card.fileSource});
+            if(card != null){
+                Game.GUIComposition.get(Game.composition.HAND_CP).add(card);
+            }
             else{
                 JPanel jp = Game.GUIComposition.get(Game.composition.LIBRARY_CP);
                 jp.removeAll();
@@ -241,19 +242,6 @@ public class Arbiter {
          // resst of the round
          order = (order+1)%2;
          Game.currentPlayer = (byte)order;
-     }
-    
-     /**
-      * Method when card is cast into play.
-      */
-     private void cardCast(Card card){
-         ArrayList<Game.cardProperties> abil;
-                 abil = card.abilUse.get(Game.boostUsabil.COMES_INTO_PLAY);
-                 if (abil != null){
-                     for(int i = 0;i < abil.size();++i){
-                         Game.propertyStorage.get(abil.get(i)).visit(card);
-                     }
-                 }
      }
      
     /** @brief Method representing and process untap phase of game.

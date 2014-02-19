@@ -159,6 +159,7 @@ public class Player {
         if(deck.size() > indexOfCardToDraw){
             card = deck.get(indexOfCardToDraw++);
             hand.add(card);
+            card.cardLoc = Game.cardLocation.IN_HAND;
             return card;
         }
         else

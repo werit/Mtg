@@ -22,6 +22,7 @@ public abstract class Card extends JPanel{
     protected Player owner;
     protected Player controller;
     boolean isTapAble;
+    Game.cardLocation cardLoc;
     protected boolean isTapped = false;
     protected String cardName;
     
@@ -38,6 +39,7 @@ public abstract class Card extends JPanel{
     protected Card(JLabel pict){
         fileSource = pict;
         add(pict);
+        cardLoc = Game.cardLocation.IN_DECK;
     }
     void visit(Untap untap){}
     void visit(Upkeep up){}
@@ -77,7 +79,18 @@ public abstract class Card extends JPanel{
         }
     }      
             
-
+      /**
+      * Method when card is cast into play.
+      */
+     void cardCast(){
+         ArrayList<Game.cardProperties> abil;
+                 abil = this.abilUse.get(Game.boostUsabil.COMES_INTO_PLAY);
+                 if (abil != null){
+                     for(int i = 0;i < abil.size();++i){
+                         Game.propertyStorage.get(abil.get(i)).visit(this);
+                     }
+                 }
+     }
     /** @brief Method testing presence of array assigned to key given as parameter.
      *  
      * @param state Parameter carries name of key, which is to be tested.
