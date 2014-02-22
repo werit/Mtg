@@ -4,8 +4,6 @@
  */
 package magicthegatheringgame;
 
-import java.util.ArrayList;
-import java.util.Map;
 import javax.swing.JLabel;
 
 
@@ -32,5 +30,5 @@ public class Mana extends Card{
         this.islandCost = 0;
         this.swampCost = 0;
         this.forestCost = 0;
-    }
+    }    
 }

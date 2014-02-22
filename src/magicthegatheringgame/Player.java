@@ -184,6 +184,19 @@ public class Player {
     public int getLifes(){ /**< public API for getting actual ammount of lifes. */
         return lifes;
     }
+    /**
+     * Method removing card from players hand.
+     * Also removes picture from hand.
+     */
+    public void remCard(Card c,Game.cardLocation loc){
+        switch(loc){
+            case IN_HAND:
+                this.hand.remove(c);                
+                break;
+        }
+       
+        
+    }
     
     /** @brief Stores all creatures of this player currently on the battlefield. 
      *  Enumeration defines possibilities of creature. If it can attack, block, do both or none.
@@ -192,7 +205,7 @@ public class Player {
     ArrayList<Card> abilityUsers;
     ArrayList<Card> attackers;
     ArrayList<Card> inPlayAbil;
-    private ArrayList<Card> pernamentEffects; /**< Here are stored all cards that are influenced by coming of other cardst to play. */
+    ArrayList<Card> inPlayCard; /**< Here are stored all cards that have been played. */
     private ArrayList<Card> hand; /**> Cards on hand of this player.*/
     ArrayList<Card> deck; /**> Cards in library of this player.*/
     private int lifes; /**< Ammount of lifes of player.*/

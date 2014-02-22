@@ -186,8 +186,6 @@ public class Game {
         pictWidth = 110*2/3;
         pictHeight = 153*2/3;
         
-        mousLis = new MouseAdapterMod();
-        
         cardTypeTranslator = new HashMap<>();
         propertyTranslator = new HashMap<>();
         inputTagTranslator = new HashMap<>();

@@ -10,18 +10,21 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 
 /**
  *
  * @author Werit
  */
-public class Arbiter {
+public class Arbiter extends MouseAdapter{
     private final JFrame pane;
     private GridBagConstraints constr;
     private final Data data;
@@ -146,10 +149,10 @@ public class Arbiter {
         createScrollAndComponents(Game.shift, 5, new JLabel[]{new JLabel("Creature1"),new JLabel("Creature2")},Game.composition.CREATURES_OP);
         
          // Creatures_currPl
-        createScrollAndComponents(Game.shift, 7, new JLabel[]{new JLabel("Creature1.1"),new JLabel("Creature2.1")},Game.composition.CREATURES_OP);
+        createScrollAndComponents(Game.shift, 7, new JLabel[]{new JLabel("Creature1.1"),new JLabel("Creature2.1")},Game.composition.CREATURES_CP);
         
         // Manas_currPl
-        createScrollAndComponents(Game.shift, 9, new JLabel[]{new JLabel("Mana1"),new JLabel("Mana2")},Game.composition.LANDS_OP);
+        createScrollAndComponents(Game.shift, 9, new JLabel[]{new JLabel("Mana1"),new JLabel("Mana2")},Game.composition.LANDS_CP);
         
        
 
@@ -260,5 +263,41 @@ public class Arbiter {
     
     private void readDeck(){
         
+    }
+    @Override
+    public void mousePressed(MouseEvent e) {
+        Card card = (Card)e.getSource();
+        boolean isLeft = SwingUtilities.isLeftMouseButton(e);
+        boolean isRight = SwingUtilities.isLeftMouseButton(e);
+        switch(card.cardLoc){
+            case IN_HAND:
+                cast(card);
+                break;
+            case IN_PLAY:
+                card.onTap(Game.state);
+                break;
+        }
+        this.pane.revalidate();
+        this.pane.repaint();
+    }
+    private void cast(Card c){
+        Game.GUIComposition.get(Game.composition.HAND_CP).remove(c);
+        switch(c.type){
+            case LAND:
+                Game.GUIComposition.get(Game.composition.LANDS_CP).add(c);
+                break;
+            case CREATURE:
+                Game.GUIComposition.get(Game.composition.CREATURES_CP).add(c);
+                break;
+            case ARTIFACT:
+                break;
+            case ENCHANCEMENT:
+                break;
+            case INSTANT:
+                break;
+            case SORCERY:
+                break;
+        }
+        c.cardCast();
     }
 }

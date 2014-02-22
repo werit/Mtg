@@ -39,6 +39,7 @@ public class MagicTheGatheringGame {
         //Data data = new Data();
         //data.addComponentsToPane(frame.getContentPane());
         Arbiter arb = new Arbiter(frame);
+        Game.mousLis = arb;
         arb.arbitGame();
         frame.pack();
         // maximalize to whole screen
@@ -47,8 +48,7 @@ public class MagicTheGatheringGame {
         
 
         frame.revalidate();
-        frame.repaint();
-    
+        frame.repaint(); 
     }
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(new Runnable(){

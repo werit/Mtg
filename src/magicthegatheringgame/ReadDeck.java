@@ -115,7 +115,10 @@ public class ReadDeck extends DefaultHandler {
             assert (currCardType != null);
             switch(currCardType){
                 case CREATURE:
-                    createCreatures(owner,tagValue.get(Game.inputTags.POWER),tagValue.get(Game.inputTags.TOUGHNESS));
+                    createCreatures(tagValue.get(Game.inputTags.POWER),tagValue.get(Game.inputTags.TOUGHNESS));
+                    break;
+                case LAND:
+                    createLand();
                     break;
             }
         }
@@ -139,7 +142,22 @@ public class ReadDeck extends DefaultHandler {
      @Override
     public void endDocument() throws SAXException {
     }
-    private void createCreatures(Player owner,byte power ,byte toughness){
+    /** @brief Private method creating land
+     * 
+     */
+    private void createLand(){
+        ImageIcon pict = inicCardsPicture(picturePath);
+
+            for (byte i = 0; i < tagValue.get(Game.inputTags.COUNT);++i){
+                Card c = new Mana(cardName,owner,new JLabel(pict));
+                for (int j = 0; j < proper.size(); ++j) {
+                    c.abilUse = new HashMap<>(allCardProp);   
+                }
+                 c.addMouseListener(Game.mousLis);
+                this.owner.deck.add(c);          
+        }
+    }
+    private void createCreatures(byte power ,byte toughness){
             ImageIcon pict = inicCardsPicture(picturePath);
 
             for (byte i = 0; i < tagValue.get(Game.inputTags.COUNT);++i){

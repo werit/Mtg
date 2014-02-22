@@ -15,7 +15,11 @@
       </castingCost>
       <count>11</count>
       <picturePath>D:\Source pictures\Plains364.jpg</picturePath>
-      <properties/>
+      <properties>
+        <boost usable="instant">
+          <WhiteMana/>
+        </boost>      
+      </properties>
     </card>
     <card name="Mountain" type="land">
       <castingCost>

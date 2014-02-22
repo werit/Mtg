@@ -33,7 +33,14 @@ public class OUtput {
     public static void lostTheGame(){
         
     }
+    public static boolean changesToGUI;
+    public static Game.cardLocation cardTakenFrom;
+    public static Game.cardLocation cardPutTo;
+    public static Card movedCard;
     static {
         choices = new ArrayList<>();
+        changesToGUI = false;
+        cardTakenFrom = null;
+        cardPutTo = null;
     }
 }
