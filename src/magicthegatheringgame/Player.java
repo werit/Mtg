@@ -18,7 +18,8 @@ public class Player {
     
     
     public Game.playerPosition battlefieldPosition; /**< Variable determining attacking and defending player.*/
-    
+    public int manaLimit;
+    public int manaPlayed;
     Player(){
         mountainPoolPlayer = 0;
         plainPoolPlayer = 0;
@@ -26,6 +27,8 @@ public class Player {
         swampPoolPlayer = 0;
         forestPoolPlayer = 0;
         colorlessPoolPlayer = 0;
+        manaLimit = 1;
+        manaPlayed = 0;
         lifes = 20;
         hand = new ArrayList<>(150);
         deck = new ArrayList<>(150);

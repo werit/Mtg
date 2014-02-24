@@ -13,6 +13,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import javax.sound.midi.SysexMessage;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,9 +42,14 @@ public class Arbiter extends MouseAdapter{
         //data.addComponentsToPane(pane.getContentPane());
     }
     private void play(){
-        Card card;
+        
         for (int i = 0; i < 7; ++i) {
-            card = data.players[Game.currentPlayer].draw();
+            drawACard();
+        }
+    }
+    private void drawACard(){
+        Card card;
+        card = data.players[Game.currentPlayer].draw();
             if(card != null){
                 Game.GUIComposition.get(Game.composition.HAND_CP).add(card);
             }
@@ -52,9 +59,7 @@ public class Arbiter extends MouseAdapter{
                 jp.add(new JLabel(data.cardBackEmpty));
                 jp.revalidate();
                 OUtput.lostTheGame();
-                break;
             }
-        }
     }
     private void createnviroment(){
         /* TODO 
@@ -99,7 +104,9 @@ public class Arbiter extends MouseAdapter{
         constr.gridwidth = 1; // hovorim, ze bude zaberat jedno policko. Potom nesmiem zabudnut nastavit scrollpanel na 8, aby sa spravil spravny pomer.
         constr.ipady = 10;
         constr.weightx = 0; // do not give any free space event if there is some.
-        constr.weighty = 0;       
+        constr.weighty = 0;     
+        
+
         
         JLabel[] labels ={
             new JLabel("Lifes"),new JLabel(data.blackMana),new JLabel(data.whiteMana),
@@ -126,7 +133,12 @@ public class Arbiter extends MouseAdapter{
             createPanelAndComponents(1, i, new JLabel[]{labels[i]}, null);
             createPanelAndComponents(2, i, new JLabel[]{new JLabel(new Integer(values[i]).toString())}, compose[i]);
         }
-
+        // adding button for next step
+        data.gameStateInd.addMouseListener(Game.mousLis);//(new NextStepButtonLis());
+        constr.gridx = 12;
+        constr.gridy = 11;
+        pane.add(data.gameStateInd,constr);
+        
         constr.gridwidth = 8; // hovorim, ze bude zaberat dve policka. Potom nesmiem zabudnut nastavit scrollpanel na 8, aby sa spravil spravny pomer.
         constr.ipady = 10;
         constr.weightx = 0; // hovorim aby nedostal ziadne miesto naviac, ak by ah bolo
@@ -251,9 +263,27 @@ public class Arbiter extends MouseAdapter{
      * 
      */
     private void untapPhase(){
+        changeGameState(Game.gameState.UPKEEP);
+    }
+    private void upKeep(){
+        changeGameState(Game.gameState.DRAW);
+    }
+    /** @brief Method processing draw phase of the game. 
+     *  Method changes Game.state to #MAIN_PHASE and makes player draw a card.
+     */
+    private void drawPhase(){
+        drawACard();
+        changeGameState(Game.gameState.MAIN_PHASE);
         
     }
-    
+    private void mainPahse(){
+        changeGameState(Game.gameState.ATTACK);
+    }
+    private void changeGameState(Game.gameState newGameState){
+        Game.state = newGameState;
+        data.gameStateInd.setText(Game.state.toString());
+        
+    }
     /** @brief Method representing and process attack phase of game.
      * 
      */
@@ -266,28 +296,55 @@ public class Arbiter extends MouseAdapter{
     }
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.getSource() == data.gameStateInd){
+            switch(Game.state){
+                case UNTAP:
+                    untapPhase();
+                    break;
+                case UPKEEP:
+                    upKeep();
+                    break;
+                case DRAW:
+                    drawPhase();
+                    break;
+                case MAIN_PHASE:
+                    break;
+                case ATTACK:
+                    break;
+                case DEFENSE:
+                    mainPahse();
+                    break;
+                case MAIN_PHASE2:
+                    break;
+                case EOT:
+                    break;
+            }
+            return;
+        }
         Card card = (Card)e.getSource();
-        boolean isLeft = SwingUtilities.isLeftMouseButton(e);
-        boolean isRight = SwingUtilities.isLeftMouseButton(e);
         switch(card.cardLoc){
             case IN_HAND:
-                cast(card);
+                if( Game.state == Game.gameState.MAIN_PHASE || Game.state == Game.gameState.MAIN_PHASE2 || card.type == Game.cardType.INSTANT){
+                    cast(card);
+                }
                 break;
             case IN_PLAY:
-                card.onTap(Game.state);
+                if(!card.isTapped && card.isTapAble)
+                    card.onTap(Game.state);
                 break;
         }
         this.pane.revalidate();
         this.pane.repaint();
     }
     private void cast(Card c){
-        Game.GUIComposition.get(Game.composition.HAND_CP).remove(c);
+        
         switch(c.type){
             case LAND:
-                Game.GUIComposition.get(Game.composition.LANDS_CP).add(c);
+                manaConditions(c);
                 break;
             case CREATURE:
                 Game.GUIComposition.get(Game.composition.CREATURES_CP).add(c);
+                c.cardCast();
                 break;
             case ARTIFACT:
                 break;
@@ -298,6 +355,14 @@ public class Arbiter extends MouseAdapter{
             case SORCERY:
                 break;
         }
-        c.cardCast();
+        
+    }
+    private void manaConditions(Card c){
+        if(c.controller.manaLimit > c.controller.manaPlayed){
+            Game.GUIComposition.get(Game.composition.HAND_CP).remove(c);
+            Game.GUIComposition.get(Game.composition.LANDS_CP).add(c);
+            ++c.controller.manaPlayed;
+            c.cardCast();
+        }
     }
 }

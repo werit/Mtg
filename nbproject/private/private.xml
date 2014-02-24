@@ -5,12 +5,12 @@
         <group>
             <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/Arbiter.java</file>
             <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/Player.java</file>
-            <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/ReadDeck.java</file>
+            <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/CreatureDecorator.java</file>
             <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/Mana.java</file>
             <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/Game.java</file>
             <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/Card.java</file>
             <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/Creature.java</file>
-            <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/OUtput.java</file>
+            <file>file:/C:/Users/msi/Documents/NetBeansProjects/MagicTheGatheringGame/src/magicthegatheringgame/WhiteMana.java</file>
         </group>
     </open-files>
 </project-private>

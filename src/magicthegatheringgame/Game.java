@@ -52,7 +52,9 @@ public class Game {
         PLAIN_OP,
         PLAIN_CP,
         COLORLESS_OP,
-        COLORLESS_CP
+        COLORLESS_CP,
+        NEXT_STEP_BUTTON_OP,
+        NEXT_STEP_BUTTON_cP
     }
     enum cardType{
         INSTANT,
@@ -138,12 +140,44 @@ public class Game {
      *  For example creature can use attack only during attack step, but abilities can be used nearly anytime.
      */
     enum gameState{
-        UNTAP,
-        UPKEEP,
-        DRAW,
-        MAIN_PHASE,
-        ATTACK,
-        DEFENSE
+        
+        UNTAP(0),
+        UPKEEP(1),
+        DRAW(2),
+        MAIN_PHASE(3),
+        ATTACK(4),
+        DEFENSE(5),
+        MAIN_PHASE2(6),
+        EOT(7);
+        private final int state;
+        gameState(int state){
+            this.state = state;
+        }
+        public int stateOfGame(){
+            return this.state;
+        }
+        public String toString(){
+            switch(this.state){
+                case 0:
+                    return "Untap";
+                case 1:
+                    return "Upkeep";
+                case 2:
+                    return "Draw";
+                case 3:
+                    return "Main Phase";
+                case 4:
+                    return "Attack";
+                case 5:
+                    return "Defend";
+                case 6:
+                    return "Second Main Phase";
+                default:
+                    return "End of the turn";
+                    
+            }
+        }
+        
     }
     /** @brief Enumeration stating where is the card in game.
      *  When card is read, it is assigned it's location in the deck.
@@ -191,6 +225,7 @@ public class Game {
         inputTagTranslator = new HashMap<>();
         exceptTrack = new ArrayList<>();
         inpBoostUsAblTransl = new HashMap<>();
+        propertyStorage = new HashMap<>();
         
         cardTypeTranslator.put("land", cardType.LAND);
         cardTypeTranslator.put("creature", cardType.CREATURE);
@@ -222,6 +257,10 @@ public class Game {
         inpBoostUsAblTransl.put("instant",Game.boostUsabil.INSTANT);
         inpBoostUsAblTransl.put("comeIntoPlay", Game.boostUsabil.COMES_INTO_PLAY);
         inpBoostUsAblTransl.put("leavesPlay", Game.boostUsabil.LEAVES_PLAY);
+        
+        propertyStorage.put(Game.cardProperties.FIRST_STRIKE,new Haste());
+        propertyStorage.put(cardProperties.HASTE, new Haste());
+        propertyStorage.put(cardProperties.WHITE_MANA,new WhiteMana());
         
     }
 

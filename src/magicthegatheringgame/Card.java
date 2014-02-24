@@ -84,6 +84,7 @@ public abstract class Card extends JPanel{
       */
      void cardCast(){
          ArrayList<Game.cardProperties> abil;
+         this.cardLoc = Game.cardLocation.IN_PLAY;
                  abil = this.abilUse.get(Game.boostUsabil.COMES_INTO_PLAY);
                  if (abil != null){
                      for(int i = 0;i < abil.size();++i){

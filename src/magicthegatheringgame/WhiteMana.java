@@ -6,6 +6,9 @@
 
 package magicthegatheringgame;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 /** @brief Class handling adding one white mana to mana pool of controller.
  * @author werit
  */
@@ -20,5 +23,8 @@ public class WhiteMana extends CreatureDecorator {
         card.controller.addPlain((byte)1);
         assert(card.isTapped == false);
         card.isTapped = true;
+        JPanel jp = Game.GUIComposition.get(Game.composition.PLAIN_CP);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(card.owner.getPlainCount()).toString()));
     }
 }
