@@ -10,7 +10,16 @@ package magicthegatheringgame;
  *
  * @author msi
  */
-public abstract class CreatureDecorator {    
+public abstract class CreatureDecorator {
+
+    /** @brief Variable indicating, if ability is forced or optional.
+     *
+     */
+    public boolean isForced;
+
+    public CreatureDecorator() {
+        this.isForced = false;
+    }
     public void visit(Creature card){
         
     }

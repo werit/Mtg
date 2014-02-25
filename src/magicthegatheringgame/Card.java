@@ -41,13 +41,6 @@ public abstract class Card extends JPanel{
         add(pict);
         cardLoc = Game.cardLocation.IN_DECK;
     }
-    void visit(Untap untap){}
-    void visit(Upkeep up){}
-    void visit(Draw dr){}
-    void visit(MainPhase maPh){}
-    void visit(Attack atck){}
-    void visit(Discard dis){}
-    void visit(EndOfTurn eot){}
     
     void accept(CreatureDecorator ability){
         ability.visit(this);
@@ -64,33 +57,56 @@ public abstract class Card extends JPanel{
      * @param state Parameter defining in which game state is currently game
      */
     void onTap(Game.gameState state){
-        ArrayList<Game.cardProperties> abil = new ArrayList<>();
         assert (isTapAble);
-        switch(state){
-            case ATTACK:
-                abil.addAll(abilPerBoostState(Game.boostUsabil.ATTACK));
-                abil.addAll(abilPerBoostState(Game.boostUsabil.INSTANT));
-                abilChoices(abil);
-                break;
-            default:
-                abil.addAll(abilPerBoostState(Game.boostUsabil.INSTANT));
-                abilChoices(abil);
-                break;
+        ArrayList<Game.cardProperties> abil = getAbilPerState(state);
+        abil.addAll(abilPerBoostState(Game.boostUsabil.INSTANT));
+        abilChoices(abil);
+    }
+    /** @brief Method processing all automatically evoked abilities during game state 
+     * 
+     * @param state State characterising actual phase of Magic the Gathering
+     */
+    public void gameStateEvokeAbil(Game.gameState state){
+        ArrayList<Game.cardProperties> abil = getAbilPerState(state);
+        CreatureDecorator cd;
+        
+        for (int i = 0; i < abil.size(); ++i) {
+            cd = Game.propertyStorage.get(abil.get(i));
+            assert (cd != null);
+            if(cd.isForced)
+                cd.visit(this);
         }
-    }      
+    }
+    
+    private ArrayList<Game.cardProperties> getAbilPerState(Game.gameState state){
+        boolean contains = false;
+        switch(state){
+            case UNTAP:
+                return abilPerBoostState(Game.boostUsabil.UNTAP);
+            case UPKEEP:
+                return abilPerBoostState(Game.boostUsabil.UPKEEP);
+            case ATTACK:
+                return abilPerBoostState(Game.boostUsabil.ATTACK);
+            case DEFENSE:
+                return abilPerBoostState(Game.boostUsabil.DEFENSE);
+            default:
+                return new ArrayList<>();
+        }
+    }
             
       /**
       * Method when card is cast into play.
       */
      void cardCast(){
-         ArrayList<Game.cardProperties> abil;
-         this.cardLoc = Game.cardLocation.IN_PLAY;
-                 abil = this.abilUse.get(Game.boostUsabil.COMES_INTO_PLAY);
-                 if (abil != null){
-                     for(int i = 0;i < abil.size();++i){
-                         Game.propertyStorage.get(abil.get(i)).visit(this);
-                     }
-                 }
+        ArrayList<Game.cardProperties> abil;
+        this.cardLoc = Game.cardLocation.IN_PLAY;
+        abil = this.abilUse.get(Game.boostUsabil.COMES_INTO_PLAY);
+        if (abil != null){
+            for(int i = 0;i < abil.size();++i){
+                Game.propertyStorage.get(abil.get(i)).visit(this);
+            }
+        }
+        this.controller.inPlayCard.add(this);
      }
     /** @brief Method testing presence of array assigned to key given as parameter.
      *  

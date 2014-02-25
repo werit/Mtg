@@ -33,7 +33,7 @@ public class Player {
         hand = new ArrayList<>(150);
         deck = new ArrayList<>(150);
         creatures = new HashMap<>();
-       
+        inPlayCard = new ArrayList<>();
     }
     
     /** @brief Method to add attacker to array of attackers.
@@ -97,43 +97,43 @@ public class Player {
     /** 
      * methods to add certain amount of mana to mana pool 
      */
-    void addPlain(byte count){
+    void addPlain(int count){
         plainPoolPlayer += count ;
     }
-    void addMountain(byte count){
+    void addMountain(int count){
         mountainPoolPlayer += count ;
     }
-    void addIsland(byte count){
+    void addIsland(int count){
         islandPoolPlayer += count ;
     }
-    void addSwamp(byte count){
+    void addSwamp(int count){
         swampPoolPlayer += count ;
     }
-    void addForest(byte count){
+    void addForest(int count){
         forestPoolPlayer += count ;
     }
-    void addColorless(byte count){
+    void addColorless(int count){
         colorlessPoolPlayer += count;
     }
     /** @brief Method to subtract used plains.
      * @param count Number of mana spent.
      */
-    void remPlain(byte count){
+    void remPlain(int count){
         plainPoolPlayer -= count ;
     }
-    void remMountain(byte count){
+    void remMountain(int count){
         mountainPoolPlayer -= count ;
     }
-    void remIsland(byte count){
+    void remIsland(int count){
         islandPoolPlayer -= count ;
     }
-    void remSwamp(byte count){
+    void remSwamp(int count){
         swampPoolPlayer -= count ;
     }
-    void remForest(byte count){
+    void remForest(int count){
         forestPoolPlayer -= count ;
     }
-    void remColorless(byte count){
+    void remColorless(int count){
         colorlessPoolPlayer -= count;
     }
     /** @brief Method to reveal current amount of white mana in pool.
@@ -196,9 +196,10 @@ public class Player {
             case IN_HAND:
                 this.hand.remove(c);                
                 break;
-        }
-       
-        
+            case IN_PLAY:
+                this.inPlayCard.remove(c);
+                break;
+        }  
     }
     
     /** @brief Stores all creatures of this player currently on the battlefield. 

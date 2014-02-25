@@ -33,7 +33,6 @@ public class Mana extends Card{
         this.forestCost = 0;
     }
     void abilChoices(ArrayList<Game.cardProperties> possibleProp){
-        this.plainCost = 5;
         switch(possibleProp.size()){
                     case 0:
                         OUtput.errCanotTap();

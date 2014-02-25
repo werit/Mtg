@@ -33,7 +33,7 @@ public class Game {
         CREATURES_CP,
         NON_CREATURE_PERN_OP,
         NON_CREATURE_PERN_CP,
-        LIBRABRY_OP,
+        LIBRARY_OP,
         LIBRARY_CP,
         GRAVE_OP,
         GRAVE_CP,
@@ -129,8 +129,11 @@ public class Game {
     enum boostUsabil{
         COMES_INTO_PLAY,
         ATTACK,
+        DEFENSE,
         IN_PLAY_GLOBAL_EFFECT,
         INSTANT,
+        UPKEEP,
+        UNTAP,
         LEAVES_PLAY
     }        
     
@@ -148,7 +151,8 @@ public class Game {
         ATTACK(4),
         DEFENSE(5),
         MAIN_PHASE2(6),
-        EOT(7);
+        EOT(7),
+        PLAYER_SWAP(8);
         private final int state;
         gameState(int state){
             this.state = state;
@@ -172,8 +176,10 @@ public class Game {
                     return "Defend";
                 case 6:
                     return "Second Main Phase";
-                default:
+                case 7:
                     return "End of the turn";
+                default:
+                    return "Player swap";
                     
             }
         }
@@ -200,7 +206,7 @@ public class Game {
     static int pictHeight; /**< Variable defining height of cards.*/
     static int shift; /**< Variable storing value of shift of scroll panels on game board.*/
     static gameState state; /**< Static variable characterising state of round.*/
-    static byte currentPlayer; /**< Variable storing number characterising player currently playing. By this number player can be found in .*/
+    static int currentPlayer; /**< Variable storing number characterising player currently playing. By this number player can be found in .*/
     static public Map<Game.cardProperties,CreatureDecorator> propertyStorage; /**< Collection processing conversion between names of card properties and have stored pointers to them.*/
     static public Map<String,Game.cardType> cardTypeTranslator; /**< Collection processing conversion between string name from input file to enum, which represent type of creature.*/
     static public Map<String,Game.cardProperties> propertyTranslator; /**< Collection processing conversion between string name from input file to enum, which represent names of card properties.*/
@@ -257,6 +263,9 @@ public class Game {
         inpBoostUsAblTransl.put("instant",Game.boostUsabil.INSTANT);
         inpBoostUsAblTransl.put("comeIntoPlay", Game.boostUsabil.COMES_INTO_PLAY);
         inpBoostUsAblTransl.put("leavesPlay", Game.boostUsabil.LEAVES_PLAY);
+        inpBoostUsAblTransl.put("untap", Game.boostUsabil.UNTAP);
+        inpBoostUsAblTransl.put("upkeep", Game.boostUsabil.UPKEEP);
+        inpBoostUsAblTransl.put("defense",Game.boostUsabil.DEFENSE);
         
         propertyStorage.put(Game.cardProperties.FIRST_STRIKE,new Haste());
         propertyStorage.put(cardProperties.HASTE, new Haste());

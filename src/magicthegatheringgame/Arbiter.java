@@ -12,20 +12,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import javax.sound.midi.SysexMessage;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 
 
-/**
- *
- * @author Werit
- */
+
 public class Arbiter extends MouseAdapter{
     private final JFrame pane;
     private GridBagConstraints constr;
@@ -44,17 +37,28 @@ public class Arbiter extends MouseAdapter{
     private void play(){
         
         for (int i = 0; i < 7; ++i) {
-            drawACard();
+            drawACard(0);
+            drawACard(1);
         }
     }
-    private void drawACard(){
+    private void drawACard(int playerPos){
         Card card;
-        card = data.players[Game.currentPlayer].draw();
+        Game.composition hand;
+        Game.composition library;
+        if(playerPos == 0){
+            hand = Game.composition.HAND_CP;
+            library = Game.composition.LIBRARY_CP;
+        }
+        else{
+            hand = Game.composition.HAND_OP;
+            library = Game.composition.LIBRARY_OP;
+        }
+        card = data.players[playerPos].draw();
             if(card != null){
-                Game.GUIComposition.get(Game.composition.HAND_CP).add(card);
+                Game.GUIComposition.get(hand).add(card);
             }
             else{
-                JPanel jp = Game.GUIComposition.get(Game.composition.LIBRARY_CP);
+                JPanel jp = Game.GUIComposition.get(library);
                 jp.removeAll();
                 jp.add(new JLabel(data.cardBackEmpty));
                 jp.revalidate();
@@ -82,7 +86,7 @@ public class Arbiter extends MouseAdapter{
         constr.gridheight = 3;
         
         // Library_op
-        createPanelAndComponents(0, 0, new JLabel[]{new JLabel(data.cardBack)},Game.composition.LIBRABRY_OP);
+        createPanelAndComponents(0, 0, new JLabel[]{new JLabel(data.cardBack)},Game.composition.LIBRARY_OP);
         // Library_currPl
         createPanelAndComponents(0, 11, new JLabel[]{new JLabel(data.cardBack)},Game.composition.LIBRARY_CP);
       
@@ -244,51 +248,123 @@ public class Arbiter extends MouseAdapter{
         
         // set beginning player
         order = 0;
-        Game.currentPlayer = (byte)order;
+        Game.currentPlayer = order;
         
      }
      
-     /** @brief Method handling each round.
+     /** @brief Method handling beginning of each new round.
       * 
       */
-     public void round(){
+     public void newRound(){
          Battleground.refresh();
          
          // resst of the round
          order = (order+1)%2;
-         Game.currentPlayer = (byte)order;
+         Game.currentPlayer = order;
      }
-     
+     private void triggerCardGamePhaseAbil(){
+         for (int i = 0; i < data.players[order].inPlayCard.size(); ++i) {
+            data.players[order].inPlayCard.get(i).gameStateEvokeAbil(Game.state);
+        }
+     }
     /** @brief Method representing and process untap phase of game.
      * 
      */
     private void untapPhase(){
+        triggerCardGamePhaseAbil();
+        Card c;
+        for(int i = 0; i < data.players[order].inPlayCard.size();++i){
+            c = data.players[order].inPlayCard.get(i);
+            if(c.isTapAble && c.isTapped){
+                c.isTapped = false;
+            }
+        }
+        data.players[Game.currentPlayer].manaPlayed = 0;
         changeGameState(Game.gameState.UPKEEP);
     }
     private void upKeep(){
+        triggerCardGamePhaseAbil();
         changeGameState(Game.gameState.DRAW);
     }
     /** @brief Method processing draw phase of the game. 
      *  Method changes Game.state to #MAIN_PHASE and makes player draw a card.
      */
     private void drawPhase(){
-        drawACard();
+        triggerCardGamePhaseAbil();
+        drawACard(Game.currentPlayer);
         changeGameState(Game.gameState.MAIN_PHASE);
         
     }
     private void mainPahse(){
-        changeGameState(Game.gameState.ATTACK);
+        switch(Game.state){
+            case MAIN_PHASE:
+                changeGameState(Game.gameState.ATTACK);
+                break;
+            case MAIN_PHASE2:
+                changeGameState(Game.gameState.EOT);
+                break;
+        }
+        
     }
+    /** @brief Method taking care of reseting amount of each mana to 0 and untapping cards.
+     *  Method calls showNoMana to set right amount of mana on screen.
+     * @param newGameState 
+     */
     private void changeGameState(Game.gameState newGameState){
         Game.state = newGameState;
         data.gameStateInd.setText(Game.state.toString());
         
+        for (int i = 0; i < data.players.length; ++i) {
+            data.players[i].remColorless(data.players[i].getColorlessCount());
+            data.players[i].remForest(data.players[i].getForestCount());
+            data.players[i].remIsland(data.players[i].getIslandCount());
+            data.players[i].remMountain(data.players[i].getMountainCount());
+            data.players[i].remPlain(data.players[i].getPlainCount());
+            data.players[i].remSwamp(data.players[i].getSwampCount());
+        }
+        showNoMana(Game.composition.PLAIN_OP);
+        showNoMana(Game.composition.PLAIN_CP);
+        showNoMana(Game.composition.SWAMP_OP);
+        showNoMana(Game.composition.SWAMP_CP);
+        showNoMana(Game.composition.FOREST_OP);
+        showNoMana(Game.composition.FOREST_CP);
+        showNoMana(Game.composition.ISLAND_OP);
+        showNoMana(Game.composition.ISLAND_CP);
+        showNoMana(Game.composition.MOUNTAIN_OP);
+        showNoMana(Game.composition.MOUNTAIN_CP);
+        showNoMana(Game.composition.COLORLESS_OP);
+        showNoMana(Game.composition.COLORLESS_CP);
+    }
+    /** @brief Method repainting zeros as mana count.
+     *  Method used at the end of each phase to show zero as mana count.
+     * @param manaPlace Key to Game.GUIComposition, which contains all components.
+     */
+    private void showNoMana(Game.composition manaPlace){
+        JPanel jp; 
+        jp = Game.GUIComposition.get(manaPlace);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(0).toString()));
     }
     /** @brief Method representing and process attack phase of game.
      * 
      */
     private void attackPhase(){
-        
+        triggerCardGamePhaseAbil();
+        changeGameState(Game.gameState.DEFENSE);
+    }
+    private void defensePhase(){
+        triggerCardGamePhaseAbil();
+        changeGameState(Game.gameState.MAIN_PHASE2);
+    }
+    private void eot(){
+        changeGameState(Game.gameState.PLAYER_SWAP);
+
+    }
+    /** @brief Method blacking cards during change of players.
+     * 
+     */
+    private void playerChange(){
+        changeGameState(Game.gameState.UNTAP);
     }
     
     private void readDeck(){
@@ -308,15 +384,22 @@ public class Arbiter extends MouseAdapter{
                     drawPhase();
                     break;
                 case MAIN_PHASE:
-                    break;
-                case ATTACK:
-                    break;
-                case DEFENSE:
                     mainPahse();
                     break;
+                case ATTACK:
+                    attackPhase();
+                    break;
+                case DEFENSE:
+                    defensePhase();
+                    break;
                 case MAIN_PHASE2:
+                    mainPahse();
                     break;
                 case EOT:
+                    eot();
+                    break;
+                case PLAYER_SWAP:
+                    playerChange();
                     break;
             }
             return;
