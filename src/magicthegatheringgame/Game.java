@@ -300,7 +300,7 @@ public class Game {
         inpBoostUsAblTransl.put("upkeep", Game.boostUsabil.UPKEEP);
         inpBoostUsAblTransl.put("defense",Game.boostUsabil.DEFENSE);
         
-        propertyStorage.put(Game.cardProperties.FIRST_STRIKE,new Haste());
+        propertyStorage.put(Game.cardProperties.FIRST_STRIKE,new FirstStrike());
         propertyStorage.put(cardProperties.HASTE, new Haste());
         propertyStorage.put(cardProperties.WHITE_MANA,new WhiteMana());
     }

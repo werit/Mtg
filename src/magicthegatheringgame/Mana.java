@@ -29,18 +29,12 @@ public class Mana extends Card{
             super.manaCosts.put(colour,0);
         }
     }
-    void abilChoices(ArrayList<Game.cardProperties> possibleProp){
-        switch(possibleProp.size()){
-                    case 0:
-                        OUtput.errCanotTap();
-                        break;
-                    case 1:
-                        Game.propertyStorage.get(possibleProp.get(0)).visit(this);
-                        break;
-                    default:
-                        OUtput.addChoices(possibleProp);
-                        OUtput.showChoices();
-                        break;
-                }
+    @Override
+    void accept(WhiteMana ability){
+        ability.visit(this);
+    }
+    @Override
+    void accept(CreatureDecorator ability){
+        ability.visit(this);
     }
 }

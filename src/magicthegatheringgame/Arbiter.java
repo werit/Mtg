@@ -356,28 +356,28 @@ public class Arbiter extends MouseAdapter{
                 data.players[i].remMana(colour, data.players[i].getManaCount(colour));
             }
         }
-        showNoMana(Game.composition.PLAIN_OP);
-        showNoMana(Game.composition.PLAIN_CP);
-        showNoMana(Game.composition.SWAMP_OP);
-        showNoMana(Game.composition.SWAMP_CP);
-        showNoMana(Game.composition.FOREST_OP);
-        showNoMana(Game.composition.FOREST_CP);
-        showNoMana(Game.composition.ISLAND_OP);
-        showNoMana(Game.composition.ISLAND_CP);
-        showNoMana(Game.composition.MOUNTAIN_OP);
-        showNoMana(Game.composition.MOUNTAIN_CP);
-        showNoMana(Game.composition.COLORLESS_OP);
-        showNoMana(Game.composition.COLORLESS_CP);
+        showCurrentMana(Game.composition.PLAIN_OP,Game.manaColours.PLAIN,1);
+        showCurrentMana(Game.composition.PLAIN_CP,Game.manaColours.PLAIN,0);
+        showCurrentMana(Game.composition.SWAMP_OP,Game.manaColours.SWAMP,1);
+        showCurrentMana(Game.composition.SWAMP_CP,Game.manaColours.SWAMP,0);
+        showCurrentMana(Game.composition.FOREST_OP,Game.manaColours.FOREST,1);
+        showCurrentMana(Game.composition.FOREST_CP,Game.manaColours.FOREST,0);
+        showCurrentMana(Game.composition.ISLAND_OP,Game.manaColours.ISLAND,1);
+        showCurrentMana(Game.composition.ISLAND_CP,Game.manaColours.ISLAND,0);
+        showCurrentMana(Game.composition.MOUNTAIN_OP,Game.manaColours.MOUNTAIN,1);
+        showCurrentMana(Game.composition.MOUNTAIN_CP,Game.manaColours.MOUNTAIN,0);
+        showCurrentMana(Game.composition.COLORLESS_OP,Game.manaColours.COLORLESS,1);
+        showCurrentMana(Game.composition.COLORLESS_CP,Game.manaColours.COLORLESS,0);
     }
     /** @brief Method repainting zeros as mana count.
      *  Method used at the end of each phase to show zero as mana count.
      * @param manaPlace Key to Game.GUIComposition, which contains all components.
      */
-    private void showNoMana(Game.composition manaPlace){
+    private void showCurrentMana(Game.composition manaPlace,Game.manaColours colour,int playerPos){
         JPanel jp; 
         jp = Game.GUIComposition.get(manaPlace);
         jp.removeAll();
-        jp.add(new JLabel(new Integer(0).toString()));
+        jp.add(new JLabel(new Integer(data.players[playerPos].getManaCount(colour)).toString()));
     }
     /** @brief Method representing and process attack phase of game.
      * 
@@ -403,10 +403,6 @@ public class Arbiter extends MouseAdapter{
         Game.currentPlayer %= 2;    
         showHand(Game.currentPlayer);
         changeGameState(Game.gameState.UNTAP);
-    }
-    
-    private void readDeck(){
-        
     }
     @Override
     public void mousePressed(MouseEvent e) {
@@ -592,29 +588,17 @@ public class Arbiter extends MouseAdapter{
             colorless = Game.composition.COLORLESS_OP;
         }
         //show plain
-        jp = Game.GUIComposition.get(plain);
-        jp.removeAll();
-        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.PLAIN)).toString()));
+        showCurrentMana(plain,Game.manaColours.PLAIN,c.controller.pos.position());
         //show swamp
-        jp = Game.GUIComposition.get(swamp);
-        jp.removeAll();
-        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.SWAMP)).toString()));
+        showCurrentMana(swamp,Game.manaColours.SWAMP,c.controller.pos.position());
         //show forest
-        jp = Game.GUIComposition.get(forest);
-        jp.removeAll();
-        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.FOREST)).toString()));
+        showCurrentMana(forest,Game.manaColours.FOREST,c.controller.pos.position());
         //show island
-        jp = Game.GUIComposition.get(island);
-        jp.removeAll();
-        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.ISLAND)).toString()));
+        showCurrentMana(island,Game.manaColours.ISLAND,c.controller.pos.position());
         //show mountain
-        jp = Game.GUIComposition.get(mountain);
-        jp.removeAll();
-        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.MOUNTAIN)).toString()));
+        showCurrentMana(mountain,Game.manaColours.MOUNTAIN,c.controller.pos.position());
         //show colorless
-        jp = Game.GUIComposition.get(colorless);
-        jp.removeAll();
-        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.COLORLESS)).toString()));
+        showCurrentMana(colorless,Game.manaColours.COLORLESS,c.controller.pos.position());
         
         return true;
     }

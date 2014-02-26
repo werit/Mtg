@@ -54,6 +54,9 @@ public abstract class Card extends JPanel{
     void accept(FirstStrike ability){
         ability.visit(this);
     }
+    void accept(WhiteMana ability){
+        ability.visit(this);
+    }
     /** @brief Method handling tapping of card.
      *  When executed method behaves in two directions depending on game state.
      *  If during attack, then call all anytime usable abilities and attack abilities otherwise call only anytime usable abilities.
@@ -137,7 +140,7 @@ public abstract class Card extends JPanel{
                         OUtput.errCanotTap();
                         break;
                     case 1:
-                        Game.propertyStorage.get(possibleProp.get(0)).visit(this);
+                        this.accept(Game.propertyStorage.get(possibleProp.get(0)));
                         break;
                     default:
                         OUtput.addChoices(possibleProp);
