@@ -82,8 +82,8 @@ public class Game {
      *  When is turn of other player all is needed is to add 1 and modulo by 2.
      */
     enum playerPosition{
-        ATTACKER (0),
-        DEFENDER (1);
+        FIRST (0),
+        SECOND (1);
         private final int positionValue; /**< Private variable storing defining value of player position. */
         playerPosition(int posValue){ /**<  Constructor assigning value to private variable.*/
             this.positionValue = posValue;
@@ -198,6 +198,39 @@ public class Game {
         IN_DECK
     }
     
+    /** @brief Enumeration representing colours of manas.
+     *  Enumeration is used as key values of HashMap for casting cost of cards and
+     * 
+     *  players mana pool.
+     */
+    public enum manaColours{
+        PLAIN,
+        SWAMP,
+        FOREST,
+        ISLAND,
+        MOUNTAIN,
+        COLORLESS;
+        public static manaColours colourFromInt(int colour){
+            switch(colour){
+                case 0:
+                    return PLAIN;
+                case 1:
+                    return SWAMP;
+                case 2:
+                    return FOREST;
+                case 3:
+                    return ISLAND;
+                case 4:
+                    return MOUNTAIN;
+                case 5:
+                    return COLORLESS;
+                default:
+                    return null;
+            }
+        }
+        
+    }
+    
     static int enemyPlPreviewPosX;
     static int enemyPlPreviewPosY;
     static int playerPreviewPosX;
@@ -270,7 +303,5 @@ public class Game {
         propertyStorage.put(Game.cardProperties.FIRST_STRIKE,new Haste());
         propertyStorage.put(cardProperties.HASTE, new Haste());
         propertyStorage.put(cardProperties.WHITE_MANA,new WhiteMana());
-        
     }
-
 }

@@ -12,6 +12,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,6 +40,38 @@ public class Arbiter extends MouseAdapter{
         for (int i = 0; i < 7; ++i) {
             drawACard(0);
             drawACard(1);
+        }
+        hideHand(1);
+    }
+    public void hideHand(int oponentNR){
+        Game.composition hand;
+        if(oponentNR == 0){
+            hand = Game.composition.HAND_CP;
+        }
+        else{
+            hand = Game.composition.HAND_OP;
+        }
+        JPanel jp;
+        jp = Game.GUIComposition.get(hand);
+        jp.removeAll();
+        for (int i = 0; i < data.players[oponentNR].hand.size(); ++i) {
+            jp.add(new JLabel(data.cardBack));
+        }
+    }
+    
+    public void showHand(int oponentNR){
+        Game.composition hand;
+        if(oponentNR == 0){
+            hand = Game.composition.HAND_CP;
+        }
+        else{
+            hand = Game.composition.HAND_OP;
+        }
+        JPanel jp;
+        jp = Game.GUIComposition.get(hand);
+        jp.removeAll();
+        for (int i = 0; i < data.players[oponentNR].hand.size(); ++i) {
+            jp.add(data.players[oponentNR].hand.get(i));
         }
     }
     private void drawACard(int playerPos){
@@ -124,10 +157,11 @@ public class Arbiter extends MouseAdapter{
         Player currOp = data.players[(Game.currentPlayer+1)%2]; 
         
         // prepare values to be displayed by default
-        int[] values = {currOp.getLifes(),currOp.getSwampCount(),currOp.getPlainCount(),currOp.getForestCount(),
-            currOp.getIslandCount(),currOp.getMountainCount(),currPl.getColorlessCount(),currPl.getColorlessCount(),
-            currPl.getIslandCount(),currPl.getMountainCount(),currPl.getForestCount(),currPl.getPlainCount(),currPl.getSwampCount(),
-            currPl.getLifes()};
+        int[] values = {currOp.getLifes(),currOp.getManaCount(Game.manaColours.SWAMP),currOp.getManaCount(Game.manaColours.PLAIN),
+            currOp.getManaCount(Game.manaColours.FOREST),currOp.getManaCount(Game.manaColours.ISLAND),currOp.getManaCount(Game.manaColours.MOUNTAIN),
+            currPl.getManaCount(Game.manaColours.COLORLESS),currPl.getManaCount(Game.manaColours.COLORLESS),currPl.getManaCount(Game.manaColours.ISLAND),
+            currPl.getManaCount(Game.manaColours.MOUNTAIN),currPl.getManaCount(Game.manaColours.FOREST),currPl.getManaCount(Game.manaColours.PLAIN),
+            currPl.getManaCount(Game.manaColours.SWAMP),currPl.getLifes()};
         Game.composition[] compose ={Game.composition.LIFES_OP,Game.composition.SWAMP_OP,Game.composition.PLAIN_OP,Game.composition.FOREST_OP,
             Game.composition.ISLAND_OP,Game.composition.MOUNTAIN_OP,Game.composition.COLORLESS_OP,Game.composition.COLORLESS_CP,
             Game.composition.MOUNTAIN_CP,Game.composition.ISLAND_CP,Game.composition.FOREST_CP,Game.composition.PLAIN_CP,Game.composition.SWAMP_CP,
@@ -244,11 +278,14 @@ public class Arbiter extends MouseAdapter{
         ReadDeck.readDeckMain("C:\\Users\\msi\\Documents\\NetBeansProjects\\MagicTheGatheringGame\\src\\magicthegatheringgame\\deck1.xml",data.players[0]);
         ReadDeck.readDeckMain("C:\\Users\\msi\\Documents\\NetBeansProjects\\MagicTheGatheringGame\\src\\magicthegatheringgame\\deck1.xml",data.players[1]);
         
-       // addToPanel(Game.GUIComposition.get(Game.composition.HAND_OP),new JLabel[]{ new JLabel(data.cardBack),new JLabel(data.cardBack)});
+        data.players[0].pos = Game.playerPosition.FIRST;
+        data.players[1].pos = Game.playerPosition.SECOND;
+        for (Player player : data.players) {
+            Collections.shuffle(player.deck);
+        }
         
         // set beginning player
-        order = 0;
-        Game.currentPlayer = order;
+        Game.currentPlayer = 0;
         
      }
      
@@ -263,8 +300,8 @@ public class Arbiter extends MouseAdapter{
          Game.currentPlayer = order;
      }
      private void triggerCardGamePhaseAbil(){
-         for (int i = 0; i < data.players[order].inPlayCard.size(); ++i) {
-            data.players[order].inPlayCard.get(i).gameStateEvokeAbil(Game.state);
+         for (int i = 0; i < data.players[Game.currentPlayer].inPlayCard.size(); ++i) {
+            data.players[Game.currentPlayer].inPlayCard.get(i).gameStateEvokeAbil(Game.state);
         }
      }
     /** @brief Method representing and process untap phase of game.
@@ -273,8 +310,8 @@ public class Arbiter extends MouseAdapter{
     private void untapPhase(){
         triggerCardGamePhaseAbil();
         Card c;
-        for(int i = 0; i < data.players[order].inPlayCard.size();++i){
-            c = data.players[order].inPlayCard.get(i);
+        for(int i = 0; i < data.players[Game.currentPlayer].inPlayCard.size();++i){
+            c = data.players[Game.currentPlayer].inPlayCard.get(i);
             if(c.isTapAble && c.isTapped){
                 c.isTapped = false;
             }
@@ -315,12 +352,9 @@ public class Arbiter extends MouseAdapter{
         data.gameStateInd.setText(Game.state.toString());
         
         for (int i = 0; i < data.players.length; ++i) {
-            data.players[i].remColorless(data.players[i].getColorlessCount());
-            data.players[i].remForest(data.players[i].getForestCount());
-            data.players[i].remIsland(data.players[i].getIslandCount());
-            data.players[i].remMountain(data.players[i].getMountainCount());
-            data.players[i].remPlain(data.players[i].getPlainCount());
-            data.players[i].remSwamp(data.players[i].getSwampCount());
+            for(Game.manaColours colour : Game.manaColours.values()){
+                data.players[i].remMana(colour, data.players[i].getManaCount(colour));
+            }
         }
         showNoMana(Game.composition.PLAIN_OP);
         showNoMana(Game.composition.PLAIN_CP);
@@ -357,6 +391,7 @@ public class Arbiter extends MouseAdapter{
         changeGameState(Game.gameState.MAIN_PHASE2);
     }
     private void eot(){
+        hideHand(Game.currentPlayer);
         changeGameState(Game.gameState.PLAYER_SWAP);
 
     }
@@ -364,6 +399,9 @@ public class Arbiter extends MouseAdapter{
      * 
      */
     private void playerChange(){
+        Game.currentPlayer += 1;
+        Game.currentPlayer %= 2;    
+        showHand(Game.currentPlayer);
         changeGameState(Game.gameState.UNTAP);
     }
     
@@ -372,6 +410,7 @@ public class Arbiter extends MouseAdapter{
     }
     @Override
     public void mousePressed(MouseEvent e) {
+        // catch event of changing game phase
         if (e.getSource() == data.gameStateInd){
             switch(Game.state){
                 case UNTAP:
@@ -404,6 +443,7 @@ public class Arbiter extends MouseAdapter{
             }
             return;
         }
+        // Event click on card. Evaluate use of card.
         Card card = (Card)e.getSource();
         switch(card.cardLoc){
             case IN_HAND:
@@ -426,8 +466,7 @@ public class Arbiter extends MouseAdapter{
                 manaConditions(c);
                 break;
             case CREATURE:
-                Game.GUIComposition.get(Game.composition.CREATURES_CP).add(c);
-                c.cardCast();
+                creatureConditions(c);
                 break;
             case ARTIFACT:
                 break;
@@ -442,10 +481,141 @@ public class Arbiter extends MouseAdapter{
     }
     private void manaConditions(Card c){
         if(c.controller.manaLimit > c.controller.manaPlayed){
-            Game.GUIComposition.get(Game.composition.HAND_CP).remove(c);
-            Game.GUIComposition.get(Game.composition.LANDS_CP).add(c);
+            Game.composition hand;
+            Game.composition lands;
+            if(c.controller == data.players[0]){
+                hand = Game.composition.HAND_CP;
+                lands = Game.composition.LANDS_CP;
+            }
+            else{
+                hand = Game.composition.HAND_OP;
+                lands = Game.composition.LANDS_OP;
+            }
+            Game.GUIComposition.get(hand).remove(c);
+            Game.GUIComposition.get(lands).add(c);
             ++c.controller.manaPlayed;
             c.cardCast();
         }
+    }
+    private void creatureConditions(Card c){
+        if(payCard(c)){
+            Game.composition hand;
+            Game.composition creatures;
+            if(c.controller == data.players[0]){
+                hand = Game.composition.HAND_CP;
+                creatures = Game.composition.CREATURES_CP;
+            }
+            else{
+                hand = Game.composition.HAND_OP;
+                creatures = Game.composition.CREATURES_OP;
+            }
+            Game.GUIComposition.get(hand).remove(c);
+            Game.GUIComposition.get(creatures).add(c);
+            c.cardCast();
+        }
+         
+    }
+    /** Method checking if player have got enough mana in pool to cast a card.
+     *  Method checks right amount of specified mana and finds out if rest of mana pool is high enough to cover colorless mana cost.
+     * @param c Card to be casted.
+     * @return Returns true, if player has enough mana and false otherwise.
+     */
+    private boolean checkCost(Card c){
+        int colorlessPool = 0;
+        for(Game.manaColours colour : Game.manaColours.values()){
+            if(c.manaCosts.get(colour) > c.controller.getManaCount(colour)){
+                if(Game.manaColours.COLORLESS.equals(colour)){
+                    if(c.manaCosts.get(colour) > c.controller.getManaCount(colour) + colorlessPool){
+                        return false;
+                    }
+                }
+                else
+                    return false;
+            }
+            else{
+                colorlessPool += c.controller.getManaCount(colour) - c.manaCosts.get(colour);
+            }
+        }
+        return true;
+    }
+    /** @brief Method tries pay mana cost of card.
+     *  Method check if player has enough mana in pool. 
+     * @param c Card to be paid for.
+     * @return True if card is playable and played.
+     */
+    private boolean payCard(Card c){
+        if(!checkCost(c))
+            return false;
+        // value needed to determine how much more manas must be subtracted from rest of manas
+        int colorlessPayment = c.manaCosts.get(Game.manaColours.COLORLESS) - c.controller.getManaCount(Game.manaColours.COLORLESS);
+        if(colorlessPayment < 0){
+            colorlessPayment = 0;
+            c.controller.remMana(Game.manaColours.COLORLESS,c.manaCosts.get(Game.manaColours.COLORLESS));
+        }
+        else
+            c.controller.remMana(Game.manaColours.COLORLESS,c.manaCosts.get(Game.manaColours.COLORLESS) - colorlessPayment);
+        // just looking at the first 5 colours. Because colourless mana is solved
+        for (int i = 0; i < 4; ++i) {
+            c.controller.remMana((Game.manaColours.colourFromInt(i)), c.manaCosts.get(Game.manaColours.colourFromInt(i)));
+            if(c.controller.getManaCount(Game.manaColours.colourFromInt(i)) > 0 && colorlessPayment > 0){
+                if(colorlessPayment > c.controller.getManaCount(Game.manaColours.colourFromInt(i))){
+                    colorlessPayment -= c.controller.getManaCount(Game.manaColours.colourFromInt(i));
+                    c.controller.remMana(Game.manaColours.colourFromInt(i),c.controller.getManaCount(Game.manaColours.colourFromInt(i)));
+                }
+                else{
+                    c.controller.remMana(Game.manaColours.colourFromInt(i), colorlessPayment);
+                    colorlessPayment = 0;
+                }
+            }
+        }
+        JPanel jp;
+        Game.composition plain;
+        Game.composition swamp;
+        Game.composition forest;
+        Game.composition island;
+        Game.composition mountain;
+        Game.composition colorless;
+        if(c.controller == data.players[0]){
+            plain = Game.composition.PLAIN_CP;
+            swamp = Game.composition.SWAMP_CP;
+            forest = Game.composition.FOREST_CP;
+            island = Game.composition.ISLAND_CP;
+            mountain = Game.composition.MOUNTAIN_CP;
+            colorless = Game.composition.COLORLESS_CP;
+        }
+        else{
+            plain = Game.composition.PLAIN_OP;
+            swamp = Game.composition.SWAMP_OP;
+            forest = Game.composition.FOREST_OP;
+            island = Game.composition.ISLAND_OP;
+            mountain = Game.composition.MOUNTAIN_OP;
+            colorless = Game.composition.COLORLESS_OP;
+        }
+        //show plain
+        jp = Game.GUIComposition.get(plain);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.PLAIN)).toString()));
+        //show swamp
+        jp = Game.GUIComposition.get(swamp);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.SWAMP)).toString()));
+        //show forest
+        jp = Game.GUIComposition.get(forest);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.FOREST)).toString()));
+        //show island
+        jp = Game.GUIComposition.get(island);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.ISLAND)).toString()));
+        //show mountain
+        jp = Game.GUIComposition.get(mountain);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.MOUNTAIN)).toString()));
+        //show colorless
+        jp = Game.GUIComposition.get(colorless);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(c.controller.getManaCount(Game.manaColours.COLORLESS)).toString()));
+        
+        return true;
     }
 }

@@ -20,11 +20,17 @@ public class WhiteMana extends CreatureDecorator {
      */
     @Override
     public void visit(Mana card){
-        card.controller.addPlain((byte)1);
+        card.controller.addMana(Game.manaColours.PLAIN,1);
         assert(card.isTapped == false);
         card.isTapped = true;
-        JPanel jp = Game.GUIComposition.get(Game.composition.PLAIN_CP);
+        Game.composition destPlain;
+        if(card.controller.pos == Game.playerPosition.FIRST){
+            destPlain = Game.composition.PLAIN_CP;
+        }
+        else
+            destPlain = Game.composition.PLAIN_OP;
+        JPanel jp = Game.GUIComposition.get(destPlain);
         jp.removeAll();
-        jp.add(new JLabel(new Integer(card.owner.getPlainCount()).toString()));
+        jp.add(new JLabel(new Integer(card.owner.getManaCount(Game.manaColours.PLAIN)).toString()));
     }
 }

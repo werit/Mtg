@@ -6,6 +6,7 @@ package magicthegatheringgame;
 
 import java.awt.Event;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,18 +29,20 @@ public abstract class Card extends JPanel{
     
     public Map<Game.boostUsabil,ArrayList<Game.cardProperties>> abilUse;
     
-    byte colorlessCost;
+    Map<Game.manaColours,Integer> manaCosts; /**< Variable storing all mana cost per every color.*/
+    /*byte colorlessCost;
     byte plainCost;
     byte mountainCost;
     byte islandCost;
     byte swampCost;
-    byte forestCost;
+    byte forestCost;*/
     
     JLabel fileSource;
     protected Card(JLabel pict){
         fileSource = pict;
         add(pict);
         cardLoc = Game.cardLocation.IN_DECK;
+        manaCosts = new HashMap<>();
     }
     
     void accept(CreatureDecorator ability){
@@ -79,7 +82,6 @@ public abstract class Card extends JPanel{
     }
     
     private ArrayList<Game.cardProperties> getAbilPerState(Game.gameState state){
-        boolean contains = false;
         switch(state){
             case UNTAP:
                 return abilPerBoostState(Game.boostUsabil.UNTAP);
@@ -107,6 +109,7 @@ public abstract class Card extends JPanel{
             }
         }
         this.controller.inPlayCard.add(this);
+        this.controller.hand.remove(this);
      }
     /** @brief Method testing presence of array assigned to key given as parameter.
      *  

@@ -20,13 +20,12 @@ public class Player {
     public Game.playerPosition battlefieldPosition; /**< Variable determining attacking and defending player.*/
     public int manaLimit;
     public int manaPlayed;
+    public Game.playerPosition pos;
     Player(){
-        mountainPoolPlayer = 0;
-        plainPoolPlayer = 0;
-        islandPoolPlayer = 0;
-        swampPoolPlayer = 0;
-        forestPoolPlayer = 0;
-        colorlessPoolPlayer = 0;
+        manaPoolPlayer = new HashMap<>();
+        for(Game.manaColours colour: Game.manaColours.values()){
+            manaPoolPlayer.put(colour, 0);
+        }
         manaLimit = 1;
         manaPlayed = 0;
         lifes = 20;
@@ -34,6 +33,7 @@ public class Player {
         deck = new ArrayList<>(150);
         creatures = new HashMap<>();
         inPlayCard = new ArrayList<>();
+        pos = null;
     }
     
     /** @brief Method to add attacker to array of attackers.
@@ -97,64 +97,52 @@ public class Player {
     /** 
      * methods to add certain amount of mana to mana pool 
      */
-    void addPlain(int count){
-        plainPoolPlayer += count ;
-    }
-    void addMountain(int count){
-        mountainPoolPlayer += count ;
-    }
-    void addIsland(int count){
-        islandPoolPlayer += count ;
-    }
-    void addSwamp(int count){
-        swampPoolPlayer += count ;
-    }
-    void addForest(int count){
-        forestPoolPlayer += count ;
-    }
-    void addColorless(int count){
-        colorlessPoolPlayer += count;
+    public void addMana(Game.manaColours colour,int count){
+        switch(colour){
+            case PLAIN:
+                manaPoolPlayer.put(Game.manaColours.PLAIN, manaPoolPlayer.get(Game.manaColours.PLAIN) + count);
+                break;
+            case SWAMP:
+                manaPoolPlayer.put(Game.manaColours.SWAMP, manaPoolPlayer.get(Game.manaColours.SWAMP) + count);
+                break;
+            case FOREST:
+                manaPoolPlayer.put(Game.manaColours.FOREST, manaPoolPlayer.get(Game.manaColours.FOREST) + count);
+                break;
+            case ISLAND:
+                manaPoolPlayer.put(Game.manaColours.ISLAND, manaPoolPlayer.get(Game.manaColours.ISLAND) + count);
+                break;
+            case MOUNTAIN:
+                manaPoolPlayer.put(Game.manaColours.MOUNTAIN, manaPoolPlayer.get(Game.manaColours.MOUNTAIN) + count);
+                break;
+            case COLORLESS:
+                manaPoolPlayer.put(Game.manaColours.COLORLESS, manaPoolPlayer.get(Game.manaColours.COLORLESS) + count);
+                break;
+        }
     }
     /** @brief Method to subtract used plains.
      * @param count Number of mana spent.
      */
-    void remPlain(int count){
-        plainPoolPlayer -= count ;
+    void remMana(Game.manaColours colour,int count){
+        addMana(colour,-count);
     }
-    void remMountain(int count){
-        mountainPoolPlayer -= count ;
-    }
-    void remIsland(int count){
-        islandPoolPlayer -= count ;
-    }
-    void remSwamp(int count){
-        swampPoolPlayer -= count ;
-    }
-    void remForest(int count){
-        forestPoolPlayer -= count ;
-    }
-    void remColorless(int count){
-        colorlessPoolPlayer -= count;
-    }
-    /** @brief Method to reveal current amount of white mana in pool.
+    /** @brief Method to reveal current amount of mana specified as parameter in pool.
      */
-    int getPlainCount(){
-        return plainPoolPlayer;
-    }
-    int getMountainCount(){
-       return mountainPoolPlayer;
-    }
-    int getIslandCount(){
-       return islandPoolPlayer;
-    }
-    int getSwampCount(){
-        return swampPoolPlayer;
-    }
-    int getForestCount(){
-        return forestPoolPlayer;
-    }
-    int getColorlessCount(){
-        return colorlessPoolPlayer;
+    public int getManaCount(Game.manaColours colour){
+        switch(colour){
+            case PLAIN:
+                return manaPoolPlayer.get(Game.manaColours.PLAIN);
+            case SWAMP:
+                return manaPoolPlayer.get(Game.manaColours.SWAMP);
+            case FOREST:
+                return manaPoolPlayer.get(Game.manaColours.FOREST);
+            case ISLAND:
+                return manaPoolPlayer.get(Game.manaColours.ISLAND);
+            case MOUNTAIN:
+                return manaPoolPlayer.get(Game.manaColours.MOUNTAIN);
+            case COLORLESS:
+                return manaPoolPlayer.get(Game.manaColours.COLORLESS);
+        }
+        return 0;
     }
     
     Card draw(){
@@ -175,11 +163,7 @@ public class Player {
             hand.remove(cardsToDiscard[i]);
         }
     }
-    byte cardsOnHand(){
-        return (byte)hand.size();
-    }
-    boolean isActive = false;
-   
+    
     public void subtractLifes(byte subtractor){ /**< public API for subtracting dealt demage. */
         lifes += subtractor;
     }
@@ -210,14 +194,15 @@ public class Player {
     ArrayList<Card> attackers;
     ArrayList<Card> inPlayAbil;
     ArrayList<Card> inPlayCard; /**< Here are stored all cards that have been played. */
-    private ArrayList<Card> hand; /**> Cards on hand of this player.*/
+    ArrayList<Card> hand; /**> Cards on hand of this player.*/
     ArrayList<Card> deck; /**> Cards in library of this player.*/
     private int lifes; /**< Ammount of lifes of player.*/
+    private Map<Game.manaColours,Integer> manaPoolPlayer;
     private byte indexOfCardToDraw;
-    private byte colorlessPoolPlayer;
+    /*private byte colorlessPoolPlayer;
     private byte mountainPoolPlayer;
     private byte plainPoolPlayer;
     private byte islandPoolPlayer;
     private byte swampPoolPlayer;
-    private byte forestPoolPlayer;
+    private byte forestPoolPlayer;*/
 }

@@ -25,12 +25,9 @@ public class Mana extends Card{
         super.controller = owner;
         super.fileSource = pict;
         super.type = Game.cardType.LAND;
-        this.colorlessCost = 0;
-        this.plainCost = 0;
-        this.mountainCost = 0;
-        this.islandCost = 0;
-        this.swampCost = 0;
-        this.forestCost = 0;
+        for(Game.manaColours colour : Game.manaColours.values()){
+            super.manaCosts.put(colour,0);
+        }
     }
     void abilChoices(ArrayList<Game.cardProperties> possibleProp){
         switch(possibleProp.size()){

@@ -10,7 +10,7 @@ public class Creature extends Card {
     private byte power;
     private byte toughness;
 
-    public Creature(String cardName,Player owner,JLabel pict,byte whitenCst,byte blackpCst,byte greenCst,byte blueCst,byte redCst,byte colorlessCst,byte power, byte toughness) {
+    public Creature(String cardName,Player owner,JLabel pict,int whitenCst,int blackpCst,int greenCst,int blueCst,int redCst,int colorlessCst,byte power, byte toughness) {
         super(pict);
         super.cardName = cardName;
         super.isTapAble = true;
@@ -18,12 +18,12 @@ public class Creature extends Card {
         super.controller = owner;
         super.fileSource = pict;
         super.type = Game.cardType.CREATURE;
-        this.plainCost = whitenCst;
-        this.swampCost = blackpCst;
-        this.forestCost = greenCst;
-        this.islandCost = blueCst;
-        this.mountainCost = redCst;
-        this.colorlessCost = colorlessCst;
+        super.manaCosts.put(Game.manaColours.PLAIN, whitenCst);
+        super.manaCosts.put(Game.manaColours.SWAMP, blackpCst);
+        super.manaCosts.put(Game.manaColours.FOREST, greenCst);
+        super.manaCosts.put(Game.manaColours.ISLAND, blueCst);
+        super.manaCosts.put(Game.manaColours.MOUNTAIN, redCst);
+        super.manaCosts.put(Game.manaColours.COLORLESS, colorlessCst);
         this.power = power;
         this.toughness = toughness;
     }
