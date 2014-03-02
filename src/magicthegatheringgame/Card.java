@@ -4,10 +4,18 @@
  */
 package magicthegatheringgame;
 
-import java.awt.Event;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -82,6 +90,26 @@ public abstract class Card extends JPanel{
             if(cd.isForced)
                 cd.visit(this);
         }
+    }
+    /**
+     * I do not know how does it work....
+     * @param g 
+     */
+    
+    @Override
+    public void paintComponent(Graphics g){
+        if(this.isTapped){
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        if((this.getWidth()) < this.getHeight())
+            this.setSize(new Dimension(this.getHeight(), this.getWidth()));   
+        g2d.translate(this.getWidth() / 2, this.getHeight() / 2);
+        g2d.rotate(Math.PI/2);
+        g2d.translate(-this.getHeight() / 2, -this.getWidth() / 2); 
+        g2d.drawImage(new BufferedImage(this.getWidth(),this.getHeight(),BufferedImage.TYPE_INT_RGB), 0, 0, null);
+        }
+        else
+            super.paintComponent(g);
     }
     
     private ArrayList<Game.cardProperties> getAbilPerState(Game.gameState state){

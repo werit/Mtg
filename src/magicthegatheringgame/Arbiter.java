@@ -6,13 +6,21 @@
 
 package magicthegatheringgame;
 
+import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,13 +29,15 @@ import javax.swing.JScrollPane;
 
 
 public class Arbiter extends MouseAdapter{
-    private final JFrame pane;
+    private final MainComponent pane;
     private GridBagConstraints constr;
     private final Data data;
     private int order;
-    Arbiter(JFrame pane){
+    private boolean drawingLine;
+    Arbiter(MainComponent pane){
         this.pane = pane;
         data = new Data();
+        drawingLine = false;
     }
     public void arbitGame(){
         initializeGamePLay();
@@ -391,6 +401,7 @@ public class Arbiter extends MouseAdapter{
         changeGameState(Game.gameState.MAIN_PHASE2);
     }
     private void eot(){
+        
         hideHand(Game.currentPlayer);
         changeGameState(Game.gameState.PLAYER_SWAP);
 
@@ -404,8 +415,70 @@ public class Arbiter extends MouseAdapter{
         showHand(Game.currentPlayer);
         changeGameState(Game.gameState.UNTAP);
     }
+   @Override
+    public void mouseDragged(MouseEvent e){
+        Line2D shape =(Line2D)pane.line;
+        shape.setLine(shape.getP1(), e.getLocationOnScreen());
+        pane.repaint();
+    }
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mouseReleased(MouseEvent e){
+        if(drawingLine){
+        Line2D shape =(Line2D)pane.line;
+        double angle = Math.atan2(        //find angle of line
+                shape.getY2()-shape.getY1(),
+                shape.getX2()-shape.getX1());
+
+        int arrowHeight = 9;                 // change as seen fit
+        int halfArrowWidth = 5;              // this too
+        Point2D end = shape.getP2();
+        Point2D aroBase = new Point2D.Double(
+                shape.getX2() - arrowHeight*Math.cos(angle),
+                shape.getY2() - arrowHeight*Math.sin(angle)
+                ); //determine the location of middle of
+                   //the base of the arrow - basically move arrowHeight
+                   //distance back towards the starting point
+
+        Point2D end1 = new Point2D.Double(
+                aroBase.getX()-halfArrowWidth*Math.cos(angle-Math.PI/2),
+                aroBase.getY()-halfArrowWidth*Math.sin(angle-Math.PI/2));
+        //locate one of the points, use angle-pi/2 to get the
+        //angle perpendicular to the original line(which was 'angle')
+
+        Point2D end2 = new Point2D.Double(
+                aroBase.getX()-halfArrowWidth*Math.cos(angle+Math.PI/2),
+                aroBase.getY()-halfArrowWidth*Math.sin(angle+Math.PI/2));
+        //same thing but with other side
+        pane.linesList.add(new Line2D.Double(end1,end2));
+        pane.linesList.add(new Line2D.Double(end,end2));
+        pane.linesList.add(new Line2D.Double(end,end1));
+
+        pane.line = null;
+        this.pane.repaint();
+        drawingLine = false;
+    }
+  }
+    @Override
+    public void mousePressed(MouseEvent e){
+        if(e.getSource() != data.gameStateInd){
+            pane.line = new Line2D.Double(e.getLocationOnScreen(), e.getLocationOnScreen());
+	            pane.linesList.add(pane.line);
+	        Graphics2D g2d = (Graphics2D) this.pane.getGraphics();
+	        g2d.setPaint(Color.BLUE);
+    	        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	        for(Shape content : pane.linesList){
+	            g2d.draw(content);
+	        }
+                drawingLine = true;
+    }
+	            pane.repaint();
+        }
+        /*line = new Line2D.Double(e.getPoint(), e.getPoint());
+        linesList.add(line);*/
+    
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        this.pane.repaint();
         // catch event of changing game phase
         if (e.getSource() == data.gameStateInd){
             switch(Game.state){
@@ -439,6 +512,7 @@ public class Arbiter extends MouseAdapter{
             }
             return;
         }
+        
         // Event click on card. Evaluate use of card.
         Card card = (Card)e.getSource();
         switch(card.cardLoc){
@@ -455,6 +529,7 @@ public class Arbiter extends MouseAdapter{
         this.pane.revalidate();
         this.pane.repaint();
     }
+   
     private void cast(Card c){
         
         switch(c.type){
@@ -564,7 +639,6 @@ public class Arbiter extends MouseAdapter{
                 }
             }
         }
-        JPanel jp;
         Game.composition plain;
         Game.composition swamp;
         Game.composition forest;

@@ -153,8 +153,7 @@ public class ReadDeck extends DefaultHandler {
                 for (int j = 0; j < proper.size(); ++j) {
                     c.abilUse = new HashMap<>(allCardProp);   
                 }
-                 c.addMouseListener(Game.mousLis);
-                this.owner.deck.add(c);          
+                 prepareCardEvents(c);          
         }
     }
     private void createCreatures(byte power ,byte toughness){
@@ -167,9 +166,17 @@ public class ReadDeck extends DefaultHandler {
                 for (int j = 0; j < proper.size(); ++j) {
                     c.abilUse = new HashMap<>(allCardProp);   
                 }
-                 c.addMouseListener(Game.mousLis);
-                this.owner.deck.add(c);          
+                prepareCardEvents(c);         
         }
+    }
+    /** @brief Method preparing card for use.
+     *  Method adds mouse listeners and add card to the deck.
+     * @param c Card to be added to deck.
+     */
+    private void prepareCardEvents(Card c){
+        c.addMouseListener(Game.mousLis);
+        c.addMouseMotionListener(Game.mousLis);
+        this.owner.deck.add(c);  
     }
     
     private ImageIcon inicCardsPicture(String path){
