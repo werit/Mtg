@@ -4,19 +4,8 @@
  */
 package magicthegatheringgame;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /**
  *

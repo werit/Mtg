@@ -6,21 +6,19 @@
 
 package magicthegatheringgame;
 
-import java.awt.Color;
+import java.awt.Checkbox;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,15 +27,18 @@ import javax.swing.JScrollPane;
 
 
 public class Arbiter extends MouseAdapter{
-    private final MainComponent pane;
+    private final JPanel pane;
     private GridBagConstraints constr;
     private final Data data;
     private int order;
-    private boolean drawingLine;
-    Arbiter(MainComponent pane){
+    private Map<Card,Checkbox> blockBox;
+    private AttackButtonsListener attAdapt;
+    
+    Arbiter(JPanel pane){
         this.pane = pane;
+        this.blockBox = new HashMap<>();
         data = new Data();
-        drawingLine = false;
+        attAdapt = new AttackButtonsListener();
     }
     public void arbitGame(){
         initializeGamePLay();
@@ -196,27 +197,23 @@ public class Arbiter extends MouseAdapter{
         constr.gridheight = 3;
         
         // Hand_op
-        createScrollAndComponents(Game.shift, 0, new JLabel[]{new JLabel(data.cardBack),new JLabel("Card2")},Game.composition.HAND_OP);
+        createScrollAndComponents(Game.shift, 0, null,Game.composition.HAND_OP);
          // Hand_currPl
         createScrollAndComponents(Game.shift, 11,null,Game.composition.HAND_CP);
         
         constr.gridheight = 2;
         
         // Manas_op
-        createScrollAndComponents(Game.shift, 3, new JLabel[]{new JLabel("Mana1"),new JLabel("Mana2")},Game.composition.LANDS_OP);
+        createScrollAndComponents(Game.shift, 3, null,Game.composition.LANDS_OP);
         
         // Creatures_op
-        createScrollAndComponents(Game.shift, 5, new JLabel[]{new JLabel("Creature1"),new JLabel("Creature2")},Game.composition.CREATURES_OP);
+        createScrollAndComponents(Game.shift, 5, null,Game.composition.CREATURES_OP);
         
          // Creatures_currPl
-        createScrollAndComponents(Game.shift, 7, new JLabel[]{new JLabel("Creature1.1"),new JLabel("Creature2.1")},Game.composition.CREATURES_CP);
+        createScrollAndComponents(Game.shift, 7, null,Game.composition.CREATURES_CP);
         
         // Manas_currPl
-        createScrollAndComponents(Game.shift, 9, new JLabel[]{new JLabel("Mana1"),new JLabel("Mana2")},Game.composition.LANDS_CP);
-        
-       
-
-        addToPanel(Game.GUIComposition.get(Game.composition.HAND_OP),new JLabel[]{ new JLabel("testing")});
+        createScrollAndComponents(Game.shift, 9, null,Game.composition.LANDS_CP);
 
         
     }
@@ -395,6 +392,66 @@ public class Arbiter extends MouseAdapter{
     private void attackPhase(){
         triggerCardGamePhaseAbil();
         changeGameState(Game.gameState.DEFENSE);
+        if(Battleground.fighters.keySet().size() > 0){
+            ArrayList<Card> blockers = availableCreatToBlock();
+            if (blockers.size() > 0){
+                JFrame def_frame = new JFrame("Defense");
+                JButton jb;
+                def_frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                JPanel defMainP = new JPanel();
+                defMainP.setLayout(new javax.swing.BoxLayout(defMainP, javax.swing.BoxLayout.Y_AXIS));
+                def_frame.add(defMainP);
+                defMainP.add(new JLabel("Who will you block this creature with ?"),0);
+                
+                jb = new JButton("Continue");
+                jb.addMouseListener(this.attAdapt);
+                defMainP.add(jb,1);
+                
+                def_frame.pack();
+                // maximalize to whole screen
+                def_frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                def_frame.setFocusable(true);
+                def_frame.setVisible(true);
+                def_frame.revalidate();
+                def_frame.repaint();
+                
+                // all creatures in set are attackers
+                for(Object c : Battleground.fighters.keySet()){
+                    if(blockers.size()>0){
+                        
+                        // creature to be blocked
+                        defMainP.add(new JLabel(c.toString()));
+                        // possible blockers
+                        for(Card crea : blockers){
+                         defMainP.add(new JCheckBox(crea.toString(), false));
+                        }
+                    }
+                    defMainP.removeAll();
+                }
+
+                
+            }
+            else
+            {
+                // no blockers
+            }
+            Battleground.refresh();
+        }
+        triggerCardGamePhaseAbil();
+        changeGameState(Game.gameState.MAIN_PHASE2);
+    }
+    /**
+     * Method returning all creatures of defending player, usable to block.
+     * @return ArrayList of Cards, that are creatures and are available to block, NEVER null.
+     */
+    private ArrayList<Card> availableCreatToBlock(){
+        ArrayList<Card> blockers = new ArrayList<>();
+        for (Card c :data.players[(Game.currentPlayer+1)%2].inPlayCard){
+            if(c.type == Game.cardType.CREATURE && !c.isTapped)
+                blockers.add(c);
+        }
+        return blockers;
+        
     }
     private void defensePhase(){
         triggerCardGamePhaseAbil();
@@ -415,67 +472,6 @@ public class Arbiter extends MouseAdapter{
         showHand(Game.currentPlayer);
         changeGameState(Game.gameState.UNTAP);
     }
-   @Override
-    public void mouseDragged(MouseEvent e){
-        Line2D shape =(Line2D)pane.line;
-        shape.setLine(shape.getP1(), e.getLocationOnScreen());
-        pane.repaint();
-    }
-    @Override
-    public void mouseReleased(MouseEvent e){
-        if(drawingLine){
-        Line2D shape =(Line2D)pane.line;
-        double angle = Math.atan2(        //find angle of line
-                shape.getY2()-shape.getY1(),
-                shape.getX2()-shape.getX1());
-
-        int arrowHeight = 9;                 // change as seen fit
-        int halfArrowWidth = 5;              // this too
-        Point2D end = shape.getP2();
-        Point2D aroBase = new Point2D.Double(
-                shape.getX2() - arrowHeight*Math.cos(angle),
-                shape.getY2() - arrowHeight*Math.sin(angle)
-                ); //determine the location of middle of
-                   //the base of the arrow - basically move arrowHeight
-                   //distance back towards the starting point
-
-        Point2D end1 = new Point2D.Double(
-                aroBase.getX()-halfArrowWidth*Math.cos(angle-Math.PI/2),
-                aroBase.getY()-halfArrowWidth*Math.sin(angle-Math.PI/2));
-        //locate one of the points, use angle-pi/2 to get the
-        //angle perpendicular to the original line(which was 'angle')
-
-        Point2D end2 = new Point2D.Double(
-                aroBase.getX()-halfArrowWidth*Math.cos(angle+Math.PI/2),
-                aroBase.getY()-halfArrowWidth*Math.sin(angle+Math.PI/2));
-        //same thing but with other side
-        pane.linesList.add(new Line2D.Double(end1,end2));
-        pane.linesList.add(new Line2D.Double(end,end2));
-        pane.linesList.add(new Line2D.Double(end,end1));
-
-        pane.line = null;
-        this.pane.repaint();
-        drawingLine = false;
-    }
-  }
-    @Override
-    public void mousePressed(MouseEvent e){
-        if(e.getSource() != data.gameStateInd){
-            pane.line = new Line2D.Double(e.getLocationOnScreen(), e.getLocationOnScreen());
-	            pane.linesList.add(pane.line);
-	        Graphics2D g2d = (Graphics2D) this.pane.getGraphics();
-	        g2d.setPaint(Color.BLUE);
-    	        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	        for(Shape content : pane.linesList){
-	            g2d.draw(content);
-	        }
-                drawingLine = true;
-    }
-	            pane.repaint();
-        }
-        /*line = new Line2D.Double(e.getPoint(), e.getPoint());
-        linesList.add(line);*/
-    
     @Override
     public void mouseClicked(MouseEvent e) {
         this.pane.repaint();
@@ -522,8 +518,7 @@ public class Arbiter extends MouseAdapter{
                 }
                 break;
             case IN_PLAY:
-                if(!card.isTapped && card.isTapAble)
-                    card.onTap(Game.state);
+                card.onUse(Game.state);
                 break;
         }
         this.pane.revalidate();

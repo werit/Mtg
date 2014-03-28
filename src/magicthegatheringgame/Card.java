@@ -7,15 +7,10 @@ package magicthegatheringgame;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -70,8 +65,7 @@ public abstract class Card extends JPanel{
      *  If during attack, then call all anytime usable abilities and attack abilities otherwise call only anytime usable abilities.
      * @param state Parameter defining in which game state is currently game
      */
-    void onTap(Game.gameState state){
-        assert (isTapAble);
+    void onUse(Game.gameState state){
         ArrayList<Game.cardProperties> abil = getAbilPerState(state);
         abil.addAll(abilPerBoostState(Game.boostUsabil.INSTANT));
         abilChoices(abil);

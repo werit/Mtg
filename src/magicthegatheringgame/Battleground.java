@@ -15,25 +15,13 @@ import java.util.Map;
  * @author msi
  */
 public class Battleground {
-    static Map<Game.battlefieldStirikes,ArrayList<Creature>> fighters;
+    static Map<Creature,Game.battlefieldStirikes> fighters;
     static void refresh(){
         assert (fighters != null);
-        assert (fighters.get(Game.battlefieldStirikes.ATTACKER) != null);
-        assert (fighters.get(Game.battlefieldStirikes.DEFENDER) != null);
-        assert (fighters.get(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER) != null);
-        assert (fighters.get(Game.battlefieldStirikes.FIRST_STRIKE_DEFENDER) != null);
-        
-        fighters.get(Game.battlefieldStirikes.ATTACKER).clear();
-        fighters.get(Game.battlefieldStirikes.DEFENDER).clear();
-        fighters.get(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER).clear();
-        fighters.get(Game.battlefieldStirikes.FIRST_STRIKE_DEFENDER).clear();
+        fighters.clear();
     }
     static{
         fighters = new HashMap<>();
-        fighters.put(Game.battlefieldStirikes.ATTACKER, new ArrayList<Creature>());
-        fighters.put(Game.battlefieldStirikes.DEFENDER, new ArrayList<Creature>());
-        fighters.put(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER, new ArrayList<Creature>());
-        fighters.put(Game.battlefieldStirikes.FIRST_STRIKE_DEFENDER, new ArrayList<Creature>());
     }
 
     

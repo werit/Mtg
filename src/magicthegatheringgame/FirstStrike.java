@@ -15,11 +15,17 @@ package magicthegatheringgame;
 public class FirstStrike extends CreatureDecorator{
     @Override
     public void visit(Creature card){
-        assert(card.isTapAble == true && card.isTapped == false);
-         if (Game.state.equals(Game.gameState.ATTACK))
-             Battleground.fighters.get(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER).add(card);
+        if((Game.state == Game.gameState.ATTACK || Game.state == Game.gameState.DEFENSE)&& card.isTapAble && !card.isTapped){
+         if (Game.state.equals(Game.gameState.ATTACK) && ((card.controller.pos == Game.playerPosition.FIRST && Game.currentPlayer == 0)
+                 ||(card.controller.pos == Game.playerPosition.SECOND && Game.currentPlayer == 1))){
+             Battleground.fighters.put(card,Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER);
+             card.isTapped = true;
+         }
          else
-             Battleground.fighters.get(Game.battlefieldStirikes.FIRST_STRIKE_DEFENDER).add(card);
-         card.isTapped = true;
+             if(Game.state.equals(Game.gameState.DEFENSE) && ((card.controller.pos == Game.playerPosition.SECOND && Game.currentPlayer == 0)
+                 ||(card.controller.pos == Game.playerPosition.FIRST && Game.currentPlayer == 1)))
+                Battleground.fighters.put(card,Game.battlefieldStirikes.FIRST_STRIKE_DEFENDER);
+         
+        }
     }
 }

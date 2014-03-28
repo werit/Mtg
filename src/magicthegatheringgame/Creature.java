@@ -46,5 +46,8 @@ public class Creature extends Card {
     void accept(FirstStrike ability){
         ability.visit(this);
     }    
-
+    @Override 
+       public String toString(){
+        return this.cardName + " " + this.power + "/" + this.toughness;    
+    }
 }
