@@ -21,6 +21,20 @@
         </boost>      
       </properties>
     </card>
+    <card name="Mountain" type="land">
+      <castingCost>
+        <!-- order is white, black, green, blue, red and colourless -->
+        <white>0</white>
+        <black>0</black>
+        <green>0</green>
+        <blue>0</blue>
+        <red>0</red>
+        <colourless>0</colourless>
+      </castingCost>
+      <count>12</count>
+      <picturePath>D:\Source pictures\Mountain376.jpg</picturePath>
+      <properties/>
+    </card>
     <card name="Glorious Anthem" type="enchantment">
       <castingCost>
         <!-- order is white, black, green, blue, red and colourless -->

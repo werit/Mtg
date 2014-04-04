@@ -14,6 +14,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -393,7 +394,7 @@ public class Arbiter extends MouseAdapter{
         triggerCardGamePhaseAbil();
         changeGameState(Game.gameState.DEFENSE);
         if(Battleground.fighters.keySet().size() > 0){
-            ArrayList<Card> blockers = availableCreatToBlock();
+            ArrayList<Creature> blockers = availableCreatToBlock();
             if (blockers.size() > 0){
                 JFrame def_frame = new JFrame("Defense");
                 JButton jb;
@@ -402,7 +403,9 @@ public class Arbiter extends MouseAdapter{
                 defMainP.setLayout(new javax.swing.BoxLayout(defMainP, javax.swing.BoxLayout.Y_AXIS));
                 def_frame.add(defMainP);
                 defMainP.add(new JLabel("Who will you block this creature with ?"),0);
-                
+                // all creatures in set are attackers 
+                this.attAdapt.refreshData(Arrays.copyOf(Battleground.fighters.keySet().toArray(), Battleground.fighters.keySet().toArray().length,Creature[].class),
+                        blockers,defMainP);
                 jb = new JButton("Continue");
                 jb.addMouseListener(this.attAdapt);
                 defMainP.add(jb,1);
@@ -415,45 +418,32 @@ public class Arbiter extends MouseAdapter{
                 def_frame.revalidate();
                 def_frame.repaint();
                 
-                // all creatures in set are attackers
-                for(Object c : Battleground.fighters.keySet()){
-                    if(blockers.size()>0){
-                        
-                        // creature to be blocked
-                        defMainP.add(new JLabel(c.toString()));
-                        // possible blockers
-                        for(Card crea : blockers){
-                         defMainP.add(new JCheckBox(crea.toString(), false));
-                        }
-                    }
-                    defMainP.removeAll();
-                }
+                this.attAdapt.chooseBlockers();
 
-                
             }
             else
             {
                 // no blockers
             }
-            Battleground.refresh();
         }
         triggerCardGamePhaseAbil();
-        changeGameState(Game.gameState.MAIN_PHASE2);
+        //changeGameState(Game.gameState.MAIN_PHASE2);
     }
     /**
      * Method returning all creatures of defending player, usable to block.
      * @return ArrayList of Cards, that are creatures and are available to block, NEVER null.
      */
-    private ArrayList<Card> availableCreatToBlock(){
-        ArrayList<Card> blockers = new ArrayList<>();
+    private ArrayList<Creature> availableCreatToBlock(){
+        ArrayList<Creature> blockers = new ArrayList<>();
         for (Card c :data.players[(Game.currentPlayer+1)%2].inPlayCard){
             if(c.type == Game.cardType.CREATURE && !c.isTapped)
-                blockers.add(c);
+                blockers.add((Creature)c);
         }
         return blockers;
         
     }
     private void defensePhase(){
+        Battleground.refresh();
         triggerCardGamePhaseAbil();
         changeGameState(Game.gameState.MAIN_PHASE2);
     }
