@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -395,17 +394,18 @@ public class Arbiter extends MouseAdapter{
         changeGameState(Game.gameState.DEFENSE);
         if(Battleground.fighters.keySet().size() > 0){
             ArrayList<Creature> blockers = availableCreatToBlock();
+            JPanel defMainP = new JPanel();
+                // all creatures in set are attackers 
+                this.attAdapt.refreshData(Arrays.copyOf(Battleground.fighters.keySet().toArray(), Battleground.fighters.keySet().toArray().length,Creature[].class),
+                        blockers,defMainP);            
+            Battleground.setDefPlayer( data.players[(Game.currentPlayer + 1) % 2]);
             if (blockers.size() > 0){
                 JFrame def_frame = new JFrame("Defense");
                 JButton jb;
                 def_frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                JPanel defMainP = new JPanel();
                 defMainP.setLayout(new javax.swing.BoxLayout(defMainP, javax.swing.BoxLayout.Y_AXIS));
                 def_frame.add(defMainP);
                 defMainP.add(new JLabel("Who will you block this creature with ?"),0);
-                // all creatures in set are attackers 
-                this.attAdapt.refreshData(Arrays.copyOf(Battleground.fighters.keySet().toArray(), Battleground.fighters.keySet().toArray().length,Creature[].class),
-                        blockers,defMainP);
                 jb = new JButton("Continue");
                 jb.addMouseListener(this.attAdapt);
                 defMainP.add(jb,1);
@@ -443,9 +443,26 @@ public class Arbiter extends MouseAdapter{
         
     }
     private void defensePhase(){
+        if(Battleground.fighters.keySet().size() > 0){
+            Battleground.evaluateFight(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER);
+            //remove all dead creatures
+            if(data.players[(Game.currentPlayer+1)%2].getLifes() > 0)
+                Battleground.evaluateFight(Game.battlefieldStirikes.ATTACKER);
+            else
+                gameOver();
+            if(data.players[(Game.currentPlayer+1)%2].getLifes() <= 0)
+                gameOver();
+
+        }
         Battleground.refresh();
         triggerCardGamePhaseAbil();
         changeGameState(Game.gameState.MAIN_PHASE2);
+    }
+    /**
+     * Method removing all dead creatures from battlefield.
+     */
+    private void removeDead(){
+        
     }
     private void eot(){
         
@@ -660,5 +677,11 @@ public class Arbiter extends MouseAdapter{
         showCurrentMana(colorless,Game.manaColours.COLORLESS,c.controller.pos.position());
         
         return true;
+    }
+    /**
+     * Method called in case game ended for foe of current player.
+     */
+    private void gameOver(){
+        
     }
 }

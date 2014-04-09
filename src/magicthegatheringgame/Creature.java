@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 public class Creature extends Card {
     private byte power;
     private byte toughness;
+    private int damageReceived;
 
     public Creature(String cardName,Player owner,JLabel pict,int whitenCst,int blackpCst,int greenCst,int blueCst,int redCst,int colorlessCst,byte power, byte toughness) {
         super(pict);
@@ -33,6 +34,27 @@ public class Creature extends Card {
     }
     public byte getPower(){
         return this.power;
+    }
+    public void setToughness(byte addition){
+        this.toughness += addition;
+    }
+    public byte getToughness(){
+        return this.toughness;
+    }
+    /**
+     * Method handling damage dealt to creature.
+     * @param damage Damage received by creature. Damage received is positive number, healing is negative.
+     */
+    public void damageReceived(int damage){
+        this.damageReceived += damage;
+        this.toughness -= damage;
+    }
+    /**
+     * Method called at the end of the turn, resets creature to proper state.
+     */
+    public void endOfTurn(){
+        this.toughness += damageReceived;
+        damageReceived = 0;
     }
     @Override
     void accept(CreatureDecorator ability){

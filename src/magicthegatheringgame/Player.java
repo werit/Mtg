@@ -165,7 +165,7 @@ public class Player {
     }
     
     public void subtractLifes(byte subtractor){ /**< public API for subtracting dealt demage. */
-        lifes += subtractor;
+        lifes -= subtractor;
     }
     
     public int getLifes(){ /**< public API for getting actual ammount of lifes. */
@@ -174,6 +174,8 @@ public class Player {
     /**
      * Method removing card from players hand.
      * Also removes picture from hand.
+     * @param c
+     * @param loc
      */
     public void remCard(Card c,Game.cardLocation loc){
         switch(loc){
