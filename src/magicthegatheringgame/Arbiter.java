@@ -446,8 +446,11 @@ public class Arbiter extends MouseAdapter{
         if(Battleground.fighters.keySet().size() > 0){
             Battleground.evaluateFight(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER);
             //remove all dead creatures
-            if(data.players[(Game.currentPlayer+1)%2].getLifes() > 0)
+            removeDead();
+            if(data.players[(Game.currentPlayer+1)%2].getLifes() > 0){
                 Battleground.evaluateFight(Game.battlefieldStirikes.ATTACKER);
+                removeDead();
+            }
             else
                 gameOver();
             if(data.players[(Game.currentPlayer+1)%2].getLifes() <= 0)
@@ -462,7 +465,50 @@ public class Arbiter extends MouseAdapter{
      * Method removing all dead creatures from battlefield.
      */
     private void removeDead(){
+        Game.composition defCrea;
+        Game.composition attCrea;
+        Game.composition defGr;
+        Game.composition attGr;
+        if(Game.currentPlayer == 0){
+            attCrea = Game.composition.CREATURES_CP;
+            defCrea = Game.composition.CREATURES_OP;
+            attGr = Game.composition.GRAVE_CP;
+            defGr = Game.composition.GRAVE_OP;
+        }
+        else{
+            attCrea = Game.composition.CREATURES_OP;
+            defCrea = Game.composition.CREATURES_CP;
+            attGr = Game.composition.GRAVE_OP;
+            defGr = Game.composition.GRAVE_CP;
+        }
+        JPanel jpFrom = Game.GUIComposition.get(defCrea);
+        JPanel jpTo = Game.GUIComposition.get(defGr);
+        Card pict = null; // remember last dead creature
+        for(Creature defen:Battleground.deadBlockers()){
+           jpFrom.remove(defen);
+           data.players[(Game.currentPlayer + 1) % 2].inPlayCard.remove(defen);
+           data.players[(Game.currentPlayer + 1) % 2].inGraveyard.add(defen);
+           pict = defen;
+        }
         
+        if(pict != null){
+            jpTo.removeAll();
+            jpTo.add(pict);
+        }
+        pict = null;
+        jpFrom = Game.GUIComposition.get(attCrea);
+        jpTo = Game.GUIComposition.get(attGr);
+        for(Creature att:Battleground.deadAttackers()){
+           jpFrom.remove(att);
+           data.players[Game.currentPlayer].inPlayCard.remove(att);
+           data.players[Game.currentPlayer].inGraveyard.add(att);
+           pict = att;
+        }
+        
+        if(pict != null){
+            jpTo.removeAll();
+            jpTo.add(pict);
+        }
     }
     private void eot(){
         

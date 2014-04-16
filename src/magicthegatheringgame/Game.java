@@ -56,7 +56,7 @@ public class Game {
         NEXT_STEP_BUTTON_OP,
         NEXT_STEP_BUTTON_cP
     }
-    enum cardType{
+    public enum cardType{
         INSTANT,
         SORCERY,
         CREATURE,
@@ -64,13 +64,13 @@ public class Game {
         LAND,
         ENCHANCEMENT
     }
-    enum creatureBattlePossib{
+    public enum creatureBattlePossib{
         ATTACKER,
         DEFENDER,
         BOTH,
         NONE
     }
-    enum battlefieldStirikes{
+    public enum battlefieldStirikes{
         FIRST_STRIKE_ATTACKER,
         FIRST_STRIKE_DEFENDER,
         ATTACKER,
@@ -81,7 +81,7 @@ public class Game {
      *  As attacker player has 0 and as defender player is assigned number 1.
      *  When is turn of other player all is needed is to add 1 and modulo by 2.
      */
-    enum playerPosition{
+    public enum playerPosition{
         FIRST (0),
         SECOND (1);
         private final int positionValue; /**< Private variable storing defining value of player position. */
@@ -190,7 +190,7 @@ public class Game {
      *  Later on, this position is changing depending on play.
      *  For example, when card drawn, then location changes from #IN_DECK to #IN_HAND
      */
-    enum cardLocation{
+    public enum cardLocation{
         IN_HAND,
         IN_PLAY,
         IN_GRAVE,

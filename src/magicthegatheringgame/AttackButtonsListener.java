@@ -10,7 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -35,9 +34,7 @@ public class AttackButtonsListener extends MouseAdapter{
     @Override
     public void mouseClicked(MouseEvent e){
         if( blockers.size() > 0){
-            Iterator it = blockCheck.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pairs = (Map.Entry)it.next();
+            for (Map.Entry pairs : blockCheck.entrySet()) {
                 Creature c = (Creature)pairs.getKey();
                 if(((JCheckBox)pairs.getValue()).isSelected()){
                     blockers.remove(c);

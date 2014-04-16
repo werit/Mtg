@@ -21,7 +21,7 @@ public class Player {
     public int manaLimit;
     public int manaPlayed;
     public Game.playerPosition pos;
-    Player(){
+    public Player(){
         manaPoolPlayer = new HashMap<>();
         for(Game.manaColours colour: Game.manaColours.values()){
             manaPoolPlayer.put(colour, 0);
@@ -33,6 +33,8 @@ public class Player {
         deck = new ArrayList<>(150);
         creatures = new HashMap<>();
         inPlayCard = new ArrayList<>();
+        inGraveyard = new ArrayList<>();
+        RFG = new ArrayList<>();
         pos = null;
     }
     
@@ -164,7 +166,7 @@ public class Player {
         }
     }
     
-    public void subtractLifes(byte subtractor){ /**< public API for subtracting dealt demage. */
+    public void subtractLifes(int subtractor){ /**< public API for subtracting dealt demage. */
         lifes -= subtractor;
     }
     
@@ -198,6 +200,8 @@ public class Player {
     ArrayList<Card> inPlayCard; /**< Here are stored all cards that have been played. */
     ArrayList<Card> hand; /**> Cards on hand of this player.*/
     ArrayList<Card> deck; /**> Cards in library of this player.*/
+    ArrayList<Card> inGraveyard; /**> Cards in graveyard of this player.*/
+    ArrayList<Card> RFG; /**> Cards , this player owns, removed from the game.*/
     private int lifes; /**< Ammount of lifes of player.*/
     private Map<Game.manaColours,Integer> manaPoolPlayer;
     private byte indexOfCardToDraw;

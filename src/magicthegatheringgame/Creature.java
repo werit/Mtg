@@ -7,9 +7,11 @@ package magicthegatheringgame;
 import javax.swing.JLabel;
 
 public class Creature extends Card {
-    private byte power;
-    private byte toughness;
+    private int power;
+    private int toughness;
     private int damageReceived;
+    private int basePower;
+    private int baseToughness;
 
     public Creature(String cardName,Player owner,JLabel pict,int whitenCst,int blackpCst,int greenCst,int blueCst,int redCst,int colorlessCst,byte power, byte toughness) {
         super(pict);
@@ -27,18 +29,25 @@ public class Creature extends Card {
         super.manaCosts.put(Game.manaColours.COLORLESS, colorlessCst);
         this.power = power;
         this.toughness = toughness;
+        this.basePower = power;
+        this.baseToughness = toughness;
     }
-
+    @Override
+    public void refreshCard(){
+        super.refreshCard();
+        power = basePower;
+        toughness = baseToughness;
+    }
     public void setPower(byte addition){
         this.power += addition;
     }
-    public byte getPower(){
+    public int getPower(){
         return this.power;
     }
     public void setToughness(byte addition){
         this.toughness += addition;
     }
-    public byte getToughness(){
+    public int getToughness(){
         return this.toughness;
     }
     /**

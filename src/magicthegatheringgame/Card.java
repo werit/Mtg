@@ -170,5 +170,8 @@ public abstract class Card extends JPanel{
                         break;
                 }
     }
-
+    public void refreshCard(){
+        if(isTapAble)
+            isTapped = false;
+    }
 }

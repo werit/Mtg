@@ -27,7 +27,43 @@ public class Battleground {
         fighters.clear();
         blockerList.clear();
         defPL = null;
+    }
+    /**
+     * Method returning all attacking creatures, which have to be removed from battleground.
+     * If removing attackers, it is necessary to call method :deadBlockers, which returns dead blockers, first.
+     * Otherwise you will lose link to those dead blockers and therefore you cannot remove them.
+     * Method also removes dead creatures from list.
+     * @return Returns array of attackers to be removed(dead attackers). Never return null.
+     */
+    public static ArrayList<Creature> deadAttackers(){
+        ArrayList<Creature> att = new ArrayList<>();
+        for(Creature crea :blockerList.keySet()){
+            if((crea).getToughness() <= 0){ //dead attacker
+                att.add(crea);
+            }
+        }
+        for(Creature crea : att)
+            blockerList.remove(crea);
+        return att;
+        
     }/**
+     * Method returning list of all dead defending creatures.
+     * Method also removes dead creatures from list.
+     * @return returns always ArrayList of dead defending creatures, never null.
+     */
+    public static ArrayList<Creature> deadBlockers(){
+        ArrayList<Creature> def = new ArrayList<>();
+        for(ArrayList<Creature> val :blockerList.values()){
+            for (int i = val.size()-1; i > -1 ; --i) {
+                if(val.get(i).getToughness() <= 0){ // dead defender
+                    def.add(val.get(i));
+                    val.remove(val.get(i));
+                }
+            }
+        }
+        return def;
+    }
+    /**
      *  Method add attackers to blockerList and makes sure, there is ArrayList for each attacker.
      * @param attackers Array of attackers of current round.
      */
@@ -62,11 +98,11 @@ public class Battleground {
             def = Game.battlefieldStirikes.DEFENDER;
         }
         for (Map.Entry pairs : blockerList.entrySet()) {
-            Creature c = (Creature)pairs.getKey();
+            Creature attackingCreature = (Creature)pairs.getKey();
             ArrayList<Creature> blockers = (ArrayList<Creature>)pairs.getValue();
-            if(fighters.get(c).equals(att) && c.getToughness() > 0){
+            if(fighters.get(attackingCreature).equals(att) && attackingCreature.getToughness() > 0){
                 if(blockers.size() > 0){
-                    int damageLeft = c.getPower();
+                    int damageLeft = attackingCreature.getPower();
                     int indexDef = 0;
                     while(damageLeft > 0){
                         if(indexDef < blockers.size()){
@@ -78,13 +114,14 @@ public class Battleground {
                     }  
                 }
                 else{
-                    defPL.subtractLifes(c.getPower());
+                    defPL.subtractLifes(attackingCreature.getPower());
                 }
             }
-            
+            // iterate over blockers
             for(int i = 0; i < blockers.size(); ++i){
-                if(fighters.get(blockers.get(i)).equals(def) && blockers.get(i).getToughness() > 0){
-                    dealDamage(blockers.get(i).getPower(), c);
+                // if it is blocker's time to block
+                if(fighters.get(blockers.get(i)).equals(def)){
+                    dealDamage(blockers.get(i).getPower(), attackingCreature);
                 }
             }
         }
