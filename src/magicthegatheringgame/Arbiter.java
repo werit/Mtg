@@ -13,16 +13,21 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 
 
@@ -33,18 +38,24 @@ public class Arbiter extends MouseAdapter{
     private int order;
     private Map<Card,Checkbox> blockBox;
     private AttackButtonsListener attAdapt;
-    
+        /**
+     * Enumeration telling which player is on loosing side.
+     */
+    private enum LoosingPlayer{
+        UPPER,
+        BOTTON,
+        BOTH
+    }
     Arbiter(JPanel pane){
         this.pane = pane;
         this.blockBox = new HashMap<>();
         data = new Data();
-        attAdapt = new AttackButtonsListener();
+        attAdapt = new AttackButtonsListener((JFrame)SwingUtilities.getWindowAncestor(pane));
     }
     public void arbitGame(){
         initializeGamePLay();
         createnviroment();
         play();
-        //data.addComponentsToPane(pane.getContentPane());
     }
     private void play(){
         
@@ -322,6 +333,8 @@ public class Arbiter extends MouseAdapter{
             if(c.isTapAble && c.isTapped){
                 c.isTapped = false;
             }
+            if(c.type == Game.cardType.CREATURE)
+                ((Creature)c).setNoSummoningSickness();
         }
         data.players[Game.currentPlayer].manaPlayed = 0;
         changeGameState(Game.gameState.UPKEEP);
@@ -400,6 +413,8 @@ public class Arbiter extends MouseAdapter{
                         blockers,defMainP);            
             Battleground.setDefPlayer( data.players[(Game.currentPlayer + 1) % 2]);
             if (blockers.size() > 0){
+                JFrame jf = (JFrame)SwingUtilities.getWindowAncestor(pane);
+                jf.setEnabled(false);
                 JFrame def_frame = new JFrame("Defense");
                 JButton jb;
                 def_frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -421,10 +436,6 @@ public class Arbiter extends MouseAdapter{
                 this.attAdapt.chooseBlockers();
 
             }
-            else
-            {
-                // no blockers
-            }
         }
         triggerCardGamePhaseAbil();
         //changeGameState(Game.gameState.MAIN_PHASE2);
@@ -444,22 +455,23 @@ public class Arbiter extends MouseAdapter{
     }
     private void defensePhase(){
         if(Battleground.fighters.keySet().size() > 0){
-            Battleground.evaluateFight(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER);
-            //remove all dead creatures
-            removeDead();
-            if(data.players[(Game.currentPlayer+1)%2].getLifes() > 0){
-                Battleground.evaluateFight(Game.battlefieldStirikes.ATTACKER);
-                removeDead();
-            }
-            else
-                gameOver();
-            if(data.players[(Game.currentPlayer+1)%2].getLifes() <= 0)
-                gameOver();
-
+            evaluate_attack(Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER);
+            evaluate_attack(Game.battlefieldStirikes.ATTACKER);
         }
         Battleground.refresh();
         triggerCardGamePhaseAbil();
         changeGameState(Game.gameState.MAIN_PHASE2);
+    }
+    /**
+     * Method starting evaluating attack and then clearing dead creatures.
+     * @param strike parameter defining what kind of strike it is. Usable are #FIRST_STRIKE_ATTACKER or #ATTACKER
+     */
+    private void evaluate_attack(Game.battlefieldStirikes strike){
+        assert(strike == Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER || strike == Game.battlefieldStirikes.ATTACKER);
+        Battleground.evaluateFight(strike);
+        //remove all dead creatures
+        removeDead();
+        chackGameOver();
     }
     /**
      * Method removing all dead creatures from battlefield.
@@ -488,6 +500,8 @@ public class Arbiter extends MouseAdapter{
            jpFrom.remove(defen);
            data.players[(Game.currentPlayer + 1) % 2].inPlayCard.remove(defen);
            data.players[(Game.currentPlayer + 1) % 2].inGraveyard.add(defen);
+           defen.cardLoc = Game.cardLocation.IN_GRAVE;
+           defen.refreshCard();
            pict = defen;
         }
         
@@ -502,6 +516,8 @@ public class Arbiter extends MouseAdapter{
            jpFrom.remove(att);
            data.players[Game.currentPlayer].inPlayCard.remove(att);
            data.players[Game.currentPlayer].inGraveyard.add(att);
+           att.cardLoc = Game.cardLocation.IN_GRAVE;
+           att.refreshCard();
            pict = att;
         }
         
@@ -725,9 +741,26 @@ public class Arbiter extends MouseAdapter{
         return true;
     }
     /**
-     * Method called in case game ended for foe of current player.
+     * Method called to check, if the game is not finished.
+     * In case it is, this method calls method game over.
      */
-    private void gameOver(){
-        
+    public void chackGameOver(){
+       String message = null;
+        if(data.players[Game.currentPlayer].getLifes() <= 0){
+            if(data.players[(Game.currentPlayer+1)%2].getLifes() <= 0){
+                message = "Both players lost";
+            }
+            else{
+                message = data.players[Game.currentPlayer].positionMessage() + " player lost the game.";
+            }
+        }
+        else{
+            if(data.players[(Game.currentPlayer+1)%2].getLifes() <= 0)
+                message = data.players[(Game.currentPlayer+1)%2].positionMessage() + " player lost the game.";
+        }
+        if(message != null){
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(pane),message);
+            System.exit(0);
+        }
     }
 }

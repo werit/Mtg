@@ -12,6 +12,7 @@ public class Creature extends Card {
     private int damageReceived;
     private int basePower;
     private int baseToughness;
+    private boolean summoningSickness; /*< Indicator if creature can use it's abilities.*/
 
     public Creature(String cardName,Player owner,JLabel pict,int whitenCst,int blackpCst,int greenCst,int blueCst,int redCst,int colorlessCst,byte power, byte toughness) {
         super(pict);
@@ -31,12 +32,26 @@ public class Creature extends Card {
         this.toughness = toughness;
         this.basePower = power;
         this.baseToughness = toughness;
+        this.summoningSickness = true;
     }
     @Override
     public void refreshCard(){
         super.refreshCard();
         power = basePower;
         toughness = baseToughness;
+    }
+    /**
+     * Method used to clear summoning sickness from creature.
+     */
+    public void setNoSummoningSickness(){
+        this.summoningSickness = false;
+    }
+    /**
+     * Method separating inside implementation from user main control.
+     * @return Return true, if creature has summoning sickness. Otherwise false;
+     */
+    public boolean hasSummoningSickness(){
+            return this.summoningSickness;
     }
     public void setPower(byte addition){
         this.power += addition;

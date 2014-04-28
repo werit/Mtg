@@ -24,6 +24,7 @@ public class Game {
     
     Game(){
     }
+
     enum composition{
         HAND_OP,
         HAND_CP,
@@ -97,7 +98,7 @@ public class Game {
     /** @brief Enumeration of names of properties.
      *  This enum contains all names of possible properties of cards.
      */
-    enum cardProperties{
+    public enum cardProperties{
         HASTE,
         FIRST_STRIKE,
         POWER_BOOST,
@@ -106,7 +107,7 @@ public class Game {
     
     /** @brief List containing all input tags with readable content.
      */
-    enum inputTags{
+    public enum inputTags{
         WHITE,
         BLACK,
         GREEN,
@@ -126,7 +127,7 @@ public class Game {
      *  Tag boost can be find in input file with attribute usable.
      *  And attribute usable can be one of latter possibilities.
      */
-    enum boostUsabil{
+    public enum boostUsabil{
         COMES_INTO_PLAY,
         ATTACK,
         DEFENSE,
@@ -142,7 +143,7 @@ public class Game {
      *  This enumeration purpose is to determine behaviour of cards that depend on game state.
      *  For example creature can use attack only during attack step, but abilities can be used nearly anytime.
      */
-    enum gameState{
+    public enum gameState{
         
         UNTAP(0),
         UPKEEP(1),

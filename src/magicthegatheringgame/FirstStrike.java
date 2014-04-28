@@ -16,7 +16,7 @@ public class FirstStrike extends CreatureDecorator{
     @Override
     public void visit(Creature card){
         if((Game.state == Game.gameState.ATTACK || Game.state == Game.gameState.DEFENSE)&& card.isTapAble && !card.isTapped){
-         if (Game.state.equals(Game.gameState.ATTACK) && ((card.controller.pos == Game.playerPosition.FIRST && Game.currentPlayer == 0)
+         if (!card.hasSummoningSickness() && Game.state.equals(Game.gameState.ATTACK) && ((card.controller.pos == Game.playerPosition.FIRST && Game.currentPlayer == 0)
                  ||(card.controller.pos == Game.playerPosition.SECOND && Game.currentPlayer == 1))){
              Battleground.fighters.put(card,Game.battlefieldStirikes.FIRST_STRIKE_ATTACKER);
              card.isTapped = true;

@@ -7,6 +7,8 @@ package magicthegatheringgame;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /** @brief Class containing all information related to player.
  *  Stores creatures of player, life of player etc. 
@@ -165,9 +167,21 @@ public class Player {
             hand.remove(cardsToDiscard[i]);
         }
     }
-    
-    public void subtractLifes(int subtractor){ /**< public API for subtracting dealt demage. */
+    /**
+     * public API for subtracting dealt damage.
+     * @param subtractor This parameter is supposed to by non negative number.  
+     */
+    public void subtractLifes(int subtractor){
         lifes -= subtractor;
+        Game.composition destLife;
+        if(this.pos == Game.playerPosition.FIRST)
+            destLife = Game.composition.LIFES_CP;
+        else
+            destLife = Game.composition.LIFES_OP;
+        JPanel jp = Game.GUIComposition.get(destLife);
+        jp.removeAll();
+        jp.add(new JLabel(new Integer(this.getLifes()).toString()));
+        
     }
     
     public int getLifes(){ /**< public API for getting actual ammount of lifes. */
@@ -188,8 +202,16 @@ public class Player {
                 this.inPlayCard.remove(c);
                 break;
         }  
-    }
-    
+    }/**
+     * Method says what is players position in string form.
+     * @return String form of side of player.
+     */
+    public String positionMessage(){
+        if (this.pos == Game.playerPosition.FIRST)
+            return "Botton";
+        else
+            return "Upper";
+    } 
     /** @brief Stores all creatures of this player currently on the battlefield. 
      *  Enumeration defines possibilities of creature. If it can attack, block, do both or none.
      */

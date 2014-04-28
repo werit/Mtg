@@ -27,38 +27,47 @@ public class AttackButtonsListener extends MouseAdapter{
     private Creature[] attackers;
     private Map<Creature,JCheckBox> blockCheck;
     private JPanel panel;
-    public AttackButtonsListener(){
+    private JFrame oldFrame;
+    public AttackButtonsListener(JFrame oldFrame){
         this.index = 0;
+        this.oldFrame = oldFrame;
         blockCheck = new HashMap<>();
     }
     @Override
     public void mouseClicked(MouseEvent e){
-        if( blockers.size() > 0){
-            for (Map.Entry pairs : blockCheck.entrySet()) {
-                Creature c = (Creature)pairs.getKey();
-                if(((JCheckBox)pairs.getValue()).isSelected()){
-                    blockers.remove(c);
-                    Creature cr = attackers[index-1];
-                    Battleground.blockerList.get(attackers[index-1]).add(c); 
-                    ArrayList<Game.cardProperties> abil;
-                    abil = c.abilUse.get(Game.boostUsabil.ATTACK);
-                    if (abil != null){
-                        for(int i = 0;i < abil.size();++i){
-                            c.accept(Game.propertyStorage.get(abil.get(i)));
-                        }
+        for (Map.Entry pairs : blockCheck.entrySet()) {
+            Creature c = (Creature)pairs.getKey();
+            if(((JCheckBox)pairs.getValue()).isSelected()){
+                blockers.remove(c);
+                Battleground.blockerList.get(attackers[index]).add(c); 
+                ArrayList<Game.cardProperties> abil;
+                abil = c.abilUse.get(Game.boostUsabil.ATTACK);
+                if (abil != null){
+                    for(int i = 0;i < abil.size();++i){
+                        c.accept(Game.propertyStorage.get(abil.get(i)));
                     }
                 }
             }
-            for (int i = panel.getComponentCount() - 1; i > 1 ; --i) {
-                panel.remove(i);
-            }
-            blockCheck.clear();
+        }
+        for (int i = panel.getComponentCount() - 1; i > 1 ; --i) {
+            panel.remove(i);
+        }
+        blockCheck.clear();
+        ++index;
+
+        if( blockers.isEmpty()){ 
+            // no more blockers,evaluate damage of attackers
+            index = attackers.length;
+        }
+        if(attackers.length == index){
+            ((JFrame)SwingUtilities.getWindowAncestor(panel)).dispose();
+            this.oldFrame.setEnabled(true);
+            this.oldFrame.setVisible(true);
+        }
+        else
+            // There were some blockers left, otherwise this phase would end
             chooseBlockers();
-        }
-        if(attackers.length <= index){
-            JFrame jf = (JFrame)SwingUtilities.getWindowAncestor(panel);
-            jf.dispose();
-        }
+            
         panel.revalidate();
         panel.repaint();
     }
@@ -72,7 +81,6 @@ public class AttackButtonsListener extends MouseAdapter{
     public void chooseBlockers(){
         if (attackers.length > index){
             if(blockers.size()>0){
-
                 // creature to be blocked
                 panel.add(new JLabel(attackers[index].toString()));
                 // possible blockers
@@ -83,7 +91,6 @@ public class AttackButtonsListener extends MouseAdapter{
                     panel.add(cb);
                 }
             }
-            ++index;
         }
     }
 }

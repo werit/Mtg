@@ -36,8 +36,6 @@ public class MagicTheGatheringGame {
         
         frame.add(jp);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //Data data = new Data();
-        //data.addComponentsToPane(frame.getContentPane());
         Arbiter arb = new Arbiter(jp);
         Game.mousLis = arb;
         arb.arbitGame();
@@ -52,6 +50,7 @@ public class MagicTheGatheringGame {
     }
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(new Runnable(){
+            @Override
             public void run(){
                 createAndShowGui();
             }
