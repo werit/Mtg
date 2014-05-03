@@ -6,28 +6,24 @@
 
 package magicthegatheringgame;
 
-import java.awt.Checkbox;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
@@ -36,9 +32,10 @@ public class Arbiter extends MouseAdapter{
     private GridBagConstraints constr;
     private final Data data;
     private int order;
-    private Map<Card,Checkbox> blockBox;
+    final JFileChooser fc;
+
     private AttackButtonsListener attAdapt;
-        /**
+     /**
      * Enumeration telling which player is on loosing side.
      */
     private enum LoosingPlayer{
@@ -48,8 +45,11 @@ public class Arbiter extends MouseAdapter{
     }
     Arbiter(JPanel pane){
         this.pane = pane;
-        this.blockBox = new HashMap<>();
         data = new Data();
+        fc = new JFileChooser();
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        fc.setFileFilter(new FileNameExtensionFilter("xml files (*.xml)", "xml"));
         attAdapt = new AttackButtonsListener((JFrame)SwingUtilities.getWindowAncestor(pane));
     }
     public void arbitGame(){
@@ -57,6 +57,10 @@ public class Arbiter extends MouseAdapter{
         createnviroment();
         play();
     }
+    /**
+     * Method begins play.
+     * Let both players draw cards and hide hand of second player.
+     */
     private void play(){
         
         for (int i = 0; i < 7; ++i) {
@@ -65,6 +69,10 @@ public class Arbiter extends MouseAdapter{
         }
         hideHand(1);
     }
+    /**
+     * Hide hand of player specified by parameter.
+     * @param oponentNR Parameter is number of player who's hand is about to be hidden. Expected numbers are 0 and 1. Where 0 is Bottom player and 1 is upper. 
+     */
     public void hideHand(int oponentNR){
         Game.composition hand;
         if(oponentNR == 0){
@@ -80,7 +88,10 @@ public class Arbiter extends MouseAdapter{
             jp.add(new JLabel(data.cardBack));
         }
     }
-    
+    /**
+     * Method showing hand of player defined by parameter.
+     * @param oponentNR Parameter is number, position, of player. Expected numbers are 0 and 1. Where 0 is Bottom player and 1 is upper. 
+     */
     public void showHand(int oponentNR){
         Game.composition hand;
         if(oponentNR == 0){
@@ -96,6 +107,10 @@ public class Arbiter extends MouseAdapter{
             jp.add(data.players[oponentNR].hand.get(i));
         }
     }
+    /**
+     * Method handling drawing card of player defined by parameter.
+     * @param playerPos Parameter is number, position, of player. Expected numbers are 0 and 1. Where 0 is Bottom player and 1 is upper. 
+     */
     private void drawACard(int playerPos){
         Card card;
         Game.composition hand;
@@ -119,11 +134,11 @@ public class Arbiter extends MouseAdapter{
                 jp.revalidate();
                 OUtput.lostTheGame();
             }
-    }
+    }/**
+     * Main method for creating environment.
+     * Set all layouts of main frame and adds all needed components.
+     */
     private void createnviroment(){
-        /* TODO 
-            zistenie pouzitelnej velkosti a funkciu na prepocet velkosti jednotlivych komponent
-        */
         pane.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
         pane.setLayout(new GridBagLayout());
         constr = new GridBagConstraints();
@@ -289,22 +304,52 @@ public class Arbiter extends MouseAdapter{
      * 
      */
      private void initializeGamePLay(){
-        order = data.rand.nextInt(2);
-        // set order of players
-        data.players[order] = new Player();
-        data.players[((order+1)%2)] = new Player();
-        ReadDeck.readDeckMain("C:\\Users\\msi\\Documents\\NetBeansProjects\\MagicTheGatheringGame\\src\\magicthegatheringgame\\deck1.xml",data.players[0]);
-        ReadDeck.readDeckMain("C:\\Users\\msi\\Documents\\NetBeansProjects\\MagicTheGatheringGame\\src\\magicthegatheringgame\\deck1.xml",data.players[1]);
-        
+        for (int i = 0; i < 2; ++i) {
+            data.players[i] = new Player();
+            ReadDeck.readDeckMain(getDeck(i),data.players[i]);
+            Collections.shuffle(data.players[i].deck);
+        }
         data.players[0].pos = Game.playerPosition.FIRST;
         data.players[1].pos = Game.playerPosition.SECOND;
-        for (Player player : data.players) {
-            Collections.shuffle(player.deck);
-        }
-        
         // set beginning player
         Game.currentPlayer = 0;
         
+     }
+     /**
+      * Method for choosing of deck through fileChooser.
+      * @return Return value is file path.
+      */
+     private String getDeck(int order){
+         String message = null;
+         int endIndex = 0;
+         try{
+            switch(order){
+                case 0:
+                    message = "Choose deck for first player.";
+                    break;
+                case 1:
+                    message = "Choose deck for second player";
+                    break;
+                    default:
+                        throw new Exception("Unknown number of players. Unknown player number is " + order);
+            }
+         }
+         catch (Exception e){
+             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(pane),e.getMessage());
+             System.exit(0);
+         }
+         // maybe allow to explicitly say to user what to do.
+         //JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(pane),message);
+         fc.setDialogTitle(message);
+         int returnVal = fc.showOpenDialog(pane);
+         while(returnVal != JFileChooser.APPROVE_OPTION){
+             returnVal = fc.showOpenDialog(pane);
+             if(endIndex > 3)
+                 System.exit(0);
+             else
+                ++endIndex;
+         }
+         return fc.getSelectedFile().getPath();
      }
      
      /** @brief Method handling beginning of each new round.
@@ -312,8 +357,6 @@ public class Arbiter extends MouseAdapter{
       */
      public void newRound(){
          Battleground.refresh();
-         
-         // resst of the round
          order = (order+1)%2;
          Game.currentPlayer = order;
      }
@@ -527,10 +570,15 @@ public class Arbiter extends MouseAdapter{
         }
     }
     private void eot(){
-        
+        while(data.players[Game.currentPlayer].hand.size() > data.players[Game.currentPlayer].handMaxSize){
+            discardCard(data.players[Game.currentPlayer]);
+        }
         hideHand(Game.currentPlayer);
         changeGameState(Game.gameState.PLAYER_SWAP);
 
+    }
+    public void discardCard(Player player){
+        
     }
     /** @brief Method blacking cards during change of players.
      * 

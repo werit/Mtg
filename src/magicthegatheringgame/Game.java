@@ -25,7 +25,7 @@ public class Game {
     Game(){
     }
 
-    enum composition{
+    public enum composition{
         HAND_OP,
         HAND_CP,
         LANDS_OP,
@@ -103,8 +103,15 @@ public class Game {
         FIRST_STRIKE,
         POWER_BOOST,
         WHITE_MANA
-    }    
-    
+    }   
+    /**
+     *  Enumeration containing error's type's. 
+     */
+    public enum Errs{
+        XML_PROPERTY_UNKNOWN,
+        XML_CARD_TYPE_UNKNOWN,
+        XML_BOOST_TIME_OF_USE_UNKNOWN
+    }
     /** @brief List containing all input tags with readable content.
      */
     public enum inputTags{
@@ -119,8 +126,12 @@ public class Game {
         BOOST,
         CARD,
         POWER,
-        TOUGHNESS
-        
+        TOUGHNESS,
+        DECK,
+        DECK_NAME,
+        CARDS,
+        CASTING_COST,
+        PROPERTIES   
     }
     
     /** @brief Enum containing all possible types of attribute "usable" of tag boost.
@@ -161,6 +172,7 @@ public class Game {
         public int stateOfGame(){
             return this.state;
         }
+        @Override
         public String toString(){
             switch(this.state){
                 case 0:
@@ -254,7 +266,7 @@ public class Game {
      *  If any new ability is created it is necessary to add it translation.
      */
     static {
-        state = gameState.UNTAP;
+        state = gameState.MAIN_PHASE; // first player starts in main phase.
         shift = 3;
         
         pictWidth = 110*2/3;
@@ -291,6 +303,11 @@ public class Game {
         inputTagTranslator.put("card", Game.inputTags.CARD);   
         inputTagTranslator.put("power", Game.inputTags.POWER);
         inputTagTranslator.put("toughness", Game.inputTags.TOUGHNESS);
+        inputTagTranslator.put("deck", inputTags.DECK);
+        inputTagTranslator.put("deckName", inputTags.DECK_NAME);
+        inputTagTranslator.put("cards", inputTags.CARDS);
+        inputTagTranslator.put("castingCost", inputTags.CASTING_COST);
+        inputTagTranslator.put("properties", inputTags.PROPERTIES);
         
         inpBoostUsAblTransl.put("inPlay", Game.boostUsabil.IN_PLAY_GLOBAL_EFFECT);
         inpBoostUsAblTransl.put("attack", Game.boostUsabil.ATTACK);

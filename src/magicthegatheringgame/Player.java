@@ -22,6 +22,7 @@ public class Player {
     public Game.playerPosition battlefieldPosition; /**< Variable determining attacking and defending player.*/
     public int manaLimit;
     public int manaPlayed;
+    public int handMaxSize;
     public Game.playerPosition pos;
     public Player(){
         manaPoolPlayer = new HashMap<>();
@@ -38,6 +39,7 @@ public class Player {
         inGraveyard = new ArrayList<>();
         RFG = new ArrayList<>();
         pos = null;
+        handMaxSize = 7;
     }
     
     /** @brief Method to add attacker to array of attackers.

@@ -53,7 +53,7 @@ public class ReadDeck extends DefaultHandler {
         readingPath = false;
         tagValue = new HashMap<>();
         this.owner = owner;
-        //this.owner.deck = owner.deck;
+        this.errors = new ArrayList<>();
         proper = new ArrayList<>();
         allCardProp = new HashMap<>();
         
@@ -61,8 +61,6 @@ public class ReadDeck extends DefaultHandler {
      @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
         inpTag = Game.inputTagTranslator.get(localName);
-        
-        
         if (inpTag != null ){
             switch (inpTag){
                 case CARD:
@@ -74,10 +72,15 @@ public class ReadDeck extends DefaultHandler {
                         cardName = atts.getValue(0);
                         currCardType = Game.cardTypeTranslator.get(atts.getValue(1));
                         if (currCardType == null)
-                        {}  // doplnit prestup na error
+                        {
+                            //err
+                            this.errors.add(MtgErrors.unknownPart(localName,Game.Errs.XML_CARD_TYPE_UNKNOWN));
+                        } 
                     }
                     else 
-                    {} // error
+                    {
+                        this.errors.add(MtgErrors.wrongAmntOfParam(localName, atts.getLength(), 2));
+                    }
                     inpTag = null;
                     break;
                 case BOOST:
@@ -87,10 +90,14 @@ public class ReadDeck extends DefaultHandler {
                     {
                         boostUsabil = Game.inpBoostUsAblTransl.get(atts.getValue(0));
                         if (boostUsabil == null)
-                        {}  // doplnit prestup na error
+                        {
+                            this.errors.add(MtgErrors.unknownPart(localName,Game.Errs.XML_BOOST_TIME_OF_USE_UNKNOWN));
+                        }  // doplnit prestup na error
                     }
                     else 
-                    {} // error
+                    {
+                        this.errors.add(MtgErrors.wrongAmntOfParam(localName, atts.getLength(), 1));
+                    }
                     inpTag = null;
                     break;
                 case PICTURE_PATH:
@@ -105,7 +112,8 @@ public class ReadDeck extends DefaultHandler {
             if(cp != null)
                 proper.add(cp);    
             else{
-                // go to error
+                /*Unknown Card property. Supported properties are Game#cardProperties. Found lovalName*/
+                this.errors.add(MtgErrors.unknownPart(localName,Game.Errs.XML_PROPERTY_UNKNOWN));
             }
         }
     }
@@ -139,11 +147,23 @@ public class ReadDeck extends DefaultHandler {
         }
         
     }
+    /**
+     * Hit end of document.
+     * In case of errors game will not continue and on error output will be written all error messages.
+     * @throws SAXException 
+     */
      @Override
     public void endDocument() throws SAXException {
+        if (this.errors.size() > 0){
+            for(int i = 0; i < this.errors.size(); ++i){
+                System.err.println(this.errors.get(i));
+            }
+            System.exit(1);
+        }
     }
     /** @brief Private method creating land
-     * 
+     *  Method creates land cards depending on amount defined by xml, and add all listeners to them.
+     *  Cards are also added to owner's deck.* 
      */
     private void createLand(){
         ImageIcon pict = inicCardsPicture(picturePath);
@@ -156,6 +176,11 @@ public class ReadDeck extends DefaultHandler {
                  prepareCardEvents(c);          
         }
     }
+    /** @brief Private method creating creature
+     *  Method creates creature cards depending on amount defined by xml,
+     *  add their abilities and prepare them for usage on game.
+     *  Cards are also added to owner's deck.
+     */    
     private void createCreatures(byte power ,byte toughness){
             ImageIcon pict = inicCardsPicture(picturePath);
 
@@ -207,7 +232,7 @@ public class ReadDeck extends DefaultHandler {
                 Game.exceptTrack.add(e);
             }
     }
-    
+    private ArrayList<String> errors;
     private static String INPUT_FILE;
     private Player owner;                   /**< Local storage of reference to owner of deck. */
     private String picturePath;             /**< String path to real location of picture representing actualy read card.*/
