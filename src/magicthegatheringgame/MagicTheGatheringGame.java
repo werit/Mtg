@@ -5,27 +5,12 @@
 package magicthegatheringgame;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 /**
  *
  * @author werit
  */
 public class MagicTheGatheringGame {
-
-    final static boolean shouldFill = true;
-    final static boolean shouldWeightX = true;
-    final static boolean RIGHT_TO_LEFT = false;
-    
-    static JLabel myHp = new JLabel("Your lifes : 20");
-    static JLabel enemyHp = new JLabel("Enymy lifes :20");
-    static JLabel colorlessMana = new JLabel("colorless mana");
-    static JLabel plainMana = new JLabel("plain mana");
-    static JLabel mountainMana = new JLabel("mountain mana");
-    static JLabel islandMana = new JLabel("island mana");
-    static JLabel swampMana = new JLabel("swamp mana");
-    static JLabel forestMana = new JLabel("forest mana");
-
     
     /**@brief Create main JFrame which will contain all components.
      * 

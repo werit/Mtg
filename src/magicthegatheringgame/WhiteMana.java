@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 /** @brief Class handling adding one white mana to mana pool of controller.
  * @author werit
  */
-public class WhiteMana extends CreatureDecorator {
+public class WhiteMana extends AbilityDecorator {
     
     /** @brief Method adding white mana.
      *  Method access controller of card and add one white mana to his mana pool and tap the card.

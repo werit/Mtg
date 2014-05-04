@@ -12,28 +12,11 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 /**
  *
  * @author werit
  */
 public class Data {
-    final static boolean shouldFill = true;
-    final static boolean shouldWeightX = true;
-    final static boolean RIGHT_TO_LEFT = false;
-    JLabel myHp = new JLabel("Your lifes : 20");
-    JLabel enemyHp = new JLabel("Enymy lifes :20");
-    JLabel colorlessMana = new JLabel("colorless mana");
-    JLabel plainMana = new JLabel("plain mana");
-    JLabel mountainMana = new JLabel("mountain mana");
-    JLabel islandMana = new JLabel("island mana");
-    JLabel swampMana = new JLabel("swamp mana");
-    JLabel forestMana = new JLabel("forest mana");
-    JPanel manaPanel = new JPanel(new GridLayout(12,1));
-    JPanel enemyPreviewCard;
-    JPanel myPreviewCard;
-    JPanel myPreviewMana;
     
     Data(){
         rand = new Random();

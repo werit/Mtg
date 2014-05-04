@@ -6,11 +6,13 @@
 
 package magicthegatheringgame;
 
+import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,12 +28,15 @@ public class AttackButtonsListener extends MouseAdapter{
     private ArrayList<Creature> blockers;
     private Creature[] attackers;
     private Map<Creature,JCheckBox> blockCheck;
+    private final JButton contin;
     private JPanel panel;
     private JFrame oldFrame;
     public AttackButtonsListener(JFrame oldFrame){
         this.index = 0;
         this.oldFrame = oldFrame;
         blockCheck = new HashMap<>();
+        this.contin = new JButton("Continue!");
+        contin.addMouseListener(this);
     }
     @Override
     public void mouseClicked(MouseEvent e){
@@ -82,7 +87,7 @@ public class AttackButtonsListener extends MouseAdapter{
         if (attackers.length > index){
             if(blockers.size()>0){
                 // creature to be blocked
-                panel.add(new JLabel(attackers[index].toString()));
+                panel.add(new JLabel("Who will you block '" + attackers[index].toString() + "'with ?"),BorderLayout.PAGE_START);   
                 // possible blockers
                 JCheckBox cb;
                 for(Creature crea : blockers){
@@ -90,6 +95,7 @@ public class AttackButtonsListener extends MouseAdapter{
                     blockCheck.put(crea, cb);
                     panel.add(cb);
                 }
+               panel.add(contin,BorderLayout.PAGE_END);
             }
         }
     }

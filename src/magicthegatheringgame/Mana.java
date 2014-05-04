@@ -34,7 +34,11 @@ public class Mana extends Card{
         ability.visit(this);
     }
     @Override
-    void accept(CreatureDecorator ability){
+    void accept(AbilityDecorator ability){
         ability.visit(this);
+    }
+    @Override
+    public String toString(){
+        return this.cardName;
     }
 }

@@ -253,7 +253,7 @@ public class Game {
     static int shift; /**< Variable storing value of shift of scroll panels on game board.*/
     static gameState state; /**< Static variable characterising state of round.*/
     static int currentPlayer; /**< Variable storing number characterising player currently playing. By this number player can be found in .*/
-    static public Map<Game.cardProperties,CreatureDecorator> propertyStorage; /**< Collection processing conversion between names of card properties and have stored pointers to them.*/
+    static public Map<Game.cardProperties,AbilityDecorator> propertyStorage; /**< Collection processing conversion between names of card properties and have stored pointers to them.*/
     static public Map<String,Game.cardType> cardTypeTranslator; /**< Collection processing conversion between string name from input file to enum, which represent type of creature.*/
     static public Map<String,Game.cardProperties> propertyTranslator; /**< Collection processing conversion between string name from input file to enum, which represent names of card properties.*/
     static public Map<Game.composition,JPanel> GUIComposition = new HashMap<>();/**< Collection to map GUI components. Ease access throughout the game.*/
@@ -321,5 +321,30 @@ public class Game {
         propertyStorage.put(Game.cardProperties.FIRST_STRIKE,new FirstStrike());
         propertyStorage.put(cardProperties.HASTE, new Haste());
         propertyStorage.put(cardProperties.WHITE_MANA,new WhiteMana());
+    }
+    public static composition gravePlace(Player player){
+        if(player.pos == Game.playerPosition.FIRST)
+            return composition.GRAVE_CP;
+        else
+            return composition.GRAVE_OP;
+    }
+    
+    public static composition handPlace(Player player){
+        if(player.pos == Game.playerPosition.FIRST)
+            return composition.HAND_CP;
+        else
+            return composition.HAND_OP;
+    }
+    public static composition libraryPlace(Player player){
+        if(player.pos == Game.playerPosition.FIRST)
+            return composition.LIBRARY_CP;
+        else
+            return composition.LIBRARY_OP;
+    }
+    public static composition creaturePlace(Player player){
+        if(player.pos == Game.playerPosition.FIRST)
+            return composition.CREATURES_CP;
+        else
+            return composition.CREATURES_OP;
     }
 }

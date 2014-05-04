@@ -33,12 +33,6 @@ public abstract class Card extends JPanel{
     public Map<Game.boostUsabil,ArrayList<Game.cardProperties>> abilUse;
     
     Map<Game.manaColours,Integer> manaCosts; /**< Variable storing all mana cost per every color.*/
-    /*byte colorlessCost;
-    byte plainCost;
-    byte mountainCost;
-    byte islandCost;
-    byte swampCost;
-    byte forestCost;*/
     
     JLabel fileSource;
     protected Card(JLabel pict){
@@ -48,7 +42,7 @@ public abstract class Card extends JPanel{
         manaCosts = new HashMap<>();
     }
     
-    void accept(CreatureDecorator ability){
+    void accept(AbilityDecorator ability){
         ability.visit(this);
     }
     void accept(Haste ability){
@@ -76,7 +70,7 @@ public abstract class Card extends JPanel{
      */
     public void gameStateEvokeAbil(Game.gameState state){
         ArrayList<Game.cardProperties> abil = getAbilPerState(state);
-        CreatureDecorator cd;
+        AbilityDecorator cd;
         
         for (int i = 0; i < abil.size(); ++i) {
             cd = Game.propertyStorage.get(abil.get(i));

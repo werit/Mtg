@@ -120,8 +120,7 @@ public class Battleground {
             // iterate over blockers
             for(int i = 0; i < blockers.size(); ++i){
                 // if it is blocker's time to block
-                Creature tmp = blockers.get(i);
-                Game.battlefieldStirikes str = fighters.get(blockers.get(i));
+
                 if(fighters.get(blockers.get(i)).equals(def)){
                     dealDamage(blockers.get(i).getPower(), attackingCreature);
                 }

@@ -81,7 +81,7 @@ public class Creature extends Card {
         damageReceived = 0;
     }
     @Override
-    void accept(CreatureDecorator ability){
+    void accept(AbilityDecorator ability){
         ability.visit(this);
     }
     @Override

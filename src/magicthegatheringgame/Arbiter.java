@@ -6,21 +6,28 @@
 
 package magicthegatheringgame;
 
+import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -29,6 +36,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Arbiter extends MouseAdapter{
     private final JPanel pane;
+    private final JPanel discardPane;
     private GridBagConstraints constr;
     private final Data data;
     private int order;
@@ -51,6 +59,7 @@ public class Arbiter extends MouseAdapter{
         fc.setMultiSelectionEnabled(false);
         fc.setFileFilter(new FileNameExtensionFilter("xml files (*.xml)", "xml"));
         attAdapt = new AttackButtonsListener((JFrame)SwingUtilities.getWindowAncestor(pane));
+        discardPane = new JPanel();
     }
     public void arbitGame(){
         initializeGamePLay();
@@ -74,17 +83,10 @@ public class Arbiter extends MouseAdapter{
      * @param oponentNR Parameter is number of player who's hand is about to be hidden. Expected numbers are 0 and 1. Where 0 is Bottom player and 1 is upper. 
      */
     public void hideHand(int oponentNR){
-        Game.composition hand;
-        if(oponentNR == 0){
-            hand = Game.composition.HAND_CP;
-        }
-        else{
-            hand = Game.composition.HAND_OP;
-        }
         JPanel jp;
-        jp = Game.GUIComposition.get(hand);
+        jp = Game.GUIComposition.get(Game.handPlace(data.players[oponentNR]));
         jp.removeAll();
-        for (int i = 0; i < data.players[oponentNR].hand.size(); ++i) {
+        for (int i = 0; i < data.players[oponentNR].handMaxSize; ++i) {
             jp.add(new JLabel(data.cardBack));
         }
     }
@@ -93,15 +95,8 @@ public class Arbiter extends MouseAdapter{
      * @param oponentNR Parameter is number, position, of player. Expected numbers are 0 and 1. Where 0 is Bottom player and 1 is upper. 
      */
     public void showHand(int oponentNR){
-        Game.composition hand;
-        if(oponentNR == 0){
-            hand = Game.composition.HAND_CP;
-        }
-        else{
-            hand = Game.composition.HAND_OP;
-        }
         JPanel jp;
-        jp = Game.GUIComposition.get(hand);
+        jp = Game.GUIComposition.get(Game.handPlace(data.players[oponentNR]));
         jp.removeAll();
         for (int i = 0; i < data.players[oponentNR].hand.size(); ++i) {
             jp.add(data.players[oponentNR].hand.get(i));
@@ -113,16 +108,9 @@ public class Arbiter extends MouseAdapter{
      */
     private void drawACard(int playerPos){
         Card card;
-        Game.composition hand;
-        Game.composition library;
-        if(playerPos == 0){
-            hand = Game.composition.HAND_CP;
-            library = Game.composition.LIBRARY_CP;
-        }
-        else{
-            hand = Game.composition.HAND_OP;
-            library = Game.composition.LIBRARY_OP;
-        }
+        Game.composition hand = Game.handPlace(data.players[playerPos]);
+        Game.composition library = Game.libraryPlace(data.players[playerPos]);
+    
         card = data.players[playerPos].draw();
             if(card != null){
                 Game.GUIComposition.get(hand).add(card);
@@ -170,7 +158,7 @@ public class Arbiter extends MouseAdapter{
         //RFG_currPl
         createPanelAndComponents(0, 7, new JLabel[]{new JLabel(data.cardBackEmpty)},Game.composition.RFG_OP);
         
-         //Grave_currPl
+         //Grave_currPlf
         createPanelAndComponents(0, 9, new JLabel[]{new JLabel(data.cardBackEmpty)},Game.composition.GRAVE_CP);
  
         
@@ -450,24 +438,18 @@ public class Arbiter extends MouseAdapter{
         changeGameState(Game.gameState.DEFENSE);
         if(Battleground.fighters.keySet().size() > 0){
             ArrayList<Creature> blockers = availableCreatToBlock();
-            JPanel defMainP = new JPanel();
+            JPanel defMainP = new JPanel(new BorderLayout());
                 // all creatures in set are attackers 
-                this.attAdapt.refreshData(Arrays.copyOf(Battleground.fighters.keySet().toArray(), Battleground.fighters.keySet().toArray().length,Creature[].class),
-                        blockers,defMainP);            
+            this.attAdapt.refreshData(Arrays.copyOf(Battleground.fighters.keySet().toArray(), Battleground.fighters.keySet().toArray().length,Creature[].class),
+                    blockers,defMainP);            
             Battleground.setDefPlayer( data.players[(Game.currentPlayer + 1) % 2]);
             if (blockers.size() > 0){
                 JFrame jf = (JFrame)SwingUtilities.getWindowAncestor(pane);
                 jf.setEnabled(false);
                 JFrame def_frame = new JFrame("Defense");
-                JButton jb;
                 def_frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 defMainP.setLayout(new javax.swing.BoxLayout(defMainP, javax.swing.BoxLayout.Y_AXIS));
                 def_frame.add(defMainP);
-                defMainP.add(new JLabel("Who will you block this creature with ?"),0);
-                jb = new JButton("Continue");
-                jb.addMouseListener(this.attAdapt);
-                defMainP.add(jb,1);
-                
                 def_frame.pack();
                 // maximalize to whole screen
                 def_frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -481,7 +463,6 @@ public class Arbiter extends MouseAdapter{
             }
         }
         triggerCardGamePhaseAbil();
-        //changeGameState(Game.gameState.MAIN_PHASE2);
     }
     /**
      * Method returning all creatures of defending player, usable to block.
@@ -520,22 +501,11 @@ public class Arbiter extends MouseAdapter{
      * Method removing all dead creatures from battlefield.
      */
     private void removeDead(){
-        Game.composition defCrea;
-        Game.composition attCrea;
-        Game.composition defGr;
-        Game.composition attGr;
-        if(Game.currentPlayer == 0){
-            attCrea = Game.composition.CREATURES_CP;
-            defCrea = Game.composition.CREATURES_OP;
-            attGr = Game.composition.GRAVE_CP;
-            defGr = Game.composition.GRAVE_OP;
-        }
-        else{
-            attCrea = Game.composition.CREATURES_OP;
-            defCrea = Game.composition.CREATURES_CP;
-            attGr = Game.composition.GRAVE_OP;
-            defGr = Game.composition.GRAVE_CP;
-        }
+        Game.composition defCrea = Game.creaturePlace(data.players[(Game.currentPlayer + 1) % 2]);
+        Game.composition attCrea = Game.creaturePlace(data.players[Game.currentPlayer]);
+        Game.composition defGr = Game.gravePlace(data.players[(Game.currentPlayer + 1) % 2]);
+        Game.composition attGr = Game.gravePlace(data.players[Game.currentPlayer]);
+
         JPanel jpFrom = Game.GUIComposition.get(defCrea);
         JPanel jpTo = Game.GUIComposition.get(defGr);
         Card pict = null; // remember last dead creature
@@ -570,15 +540,96 @@ public class Arbiter extends MouseAdapter{
         }
     }
     private void eot(){
-        while(data.players[Game.currentPlayer].hand.size() > data.players[Game.currentPlayer].handMaxSize){
-            discardCard(data.players[Game.currentPlayer]);
+        if(data.players[Game.currentPlayer].hand.size() > data.players[Game.currentPlayer].handMaxSize){
+            discardCard(data.players[Game.currentPlayer],data.players[Game.currentPlayer].hand.size() - data.players[Game.currentPlayer].handMaxSize);
         }
         hideHand(Game.currentPlayer);
         changeGameState(Game.gameState.PLAYER_SWAP);
 
     }
-    public void discardCard(Player player){
+    /**
+     * Method handling discarding card.
+     * Let player choose and then discard chosen card.
+     * @param player Parameter is player who is discarding card.
+     * @param howManyToDics Parameter determining how many cards have to be discarded.
+     */
+    public void discardCard(Player player,int howManyToDics){
+        ((JFrame)SwingUtilities.getWindowAncestor(this.pane)).setEnabled(false);
+        JFrame jf = new JFrame();
+        jf.add(this.discardPane.add(chooseCardToDiscard(player,howManyToDics)));
+        jf.pack();
+        jf.setFocusable(true);
+        jf.setEnabled(true);
+        jf.setVisible(true);
+        jf.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        jf.setTitle("Discarding card.");
+        jf.revalidate();
+        jf.repaint();
+    }
+    
+    /** Creates the panel shown by the first tab. */
+    private JPanel chooseCardToDiscard(final Player player,final int howManyToDics) {
+        JPanel discPane = new JPanel(new BorderLayout());
+        final int numButtons = player.hand.size();
+        JRadioButton[] radioButtons = new JRadioButton[numButtons];
+        final ButtonGroup group = new ButtonGroup();
         
+        for(int i = 0;i < numButtons; ++i){
+            radioButtons[i] = new JRadioButton(player.hand.get(i).toString());
+            group.add(radioButtons[i]);
+            radioButtons[i].setActionCommand(new Integer(i).toString());
+        }
+        radioButtons[0].setSelected(true);
+
+        JButton showItButton = new JButton("Discard.");
+        showItButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String command = group.getSelection().getActionCommand();
+                for(int i = 0;i < numButtons;++i){
+                    if(command.equals(new Integer(i).toString())){
+                        fromHandToGrave(player,player.hand.get(i));
+                        ((JFrame)SwingUtilities.getWindowAncestor((JButton)e.getSource())).dispose();                  
+                        discardPane.removeAll();
+                        ((JFrame)SwingUtilities.getWindowAncestor(pane)).setEnabled(true);
+                        ((JFrame)SwingUtilities.getWindowAncestor(pane)).setVisible(true);
+                        if(howManyToDics > 1)
+                            discardCard(player, howManyToDics - 1);
+                    }
+                }
+            }
+        });
+        JPanel internDiscPane = new JPanel();
+        JLabel label = new JLabel("Choose card to be discarded.");
+        
+        internDiscPane.setLayout(new BoxLayout(internDiscPane, BoxLayout.PAGE_AXIS));
+        internDiscPane.add(label);
+        
+        for(int i = 0;i < radioButtons.length;++i){
+            internDiscPane.add(radioButtons[i]);
+        }
+        
+        JPanel jp = new JPanel(new BorderLayout());
+        JPanel showButt = new JPanel(new FlowLayout());
+        showButt.add(showItButton);
+        jp.add(internDiscPane, BorderLayout.PAGE_START);
+        jp.add(showButt, BorderLayout.PAGE_END);
+        discPane.add(jp);
+        return discPane;
+    }
+    /**
+     * Method handling discarding card from players hand to the grave.
+     * @param player Player who is discarding card from his hand.
+     * @param card Card which is about to be discarded.
+     */
+    public void fromHandToGrave(Player player,Card card){
+        Game.GUIComposition.get(Game.gravePlace(player)).removeAll();
+        Game.GUIComposition.get(Game.handPlace(player)).remove(card);
+        Game.GUIComposition.get(Game.gravePlace(player)).add(card);
+
+        player.hand.remove(card);
+        player.inGraveyard.add(card);
+        card.cardLoc = Game.cardLocation.IN_GRAVE;
     }
     /** @brief Method blacking cards during change of players.
      * 
