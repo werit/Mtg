@@ -14,17 +14,14 @@ import javax.swing.JPanel;
 
 
 /** @brief Class containing all common information used through game.
- *
+ * Class contains mainly static data and enumerations used throughout the game. 
+ * Also contains dictionaries for translation between user input and game directives.
  * @author Tibor
  */
 public class Game {
     /** @brief Enum containing names of each position on game board
      * This enumeration contain names describing every possible position used in GUI
      */
-    
-    Game(){
-    }
-
     public enum composition{
         HAND_OP,
         HAND_CP,
@@ -57,6 +54,10 @@ public class Game {
         NEXT_STEP_BUTTON_OP,
         NEXT_STEP_BUTTON_cP
     }
+    /**
+     * Enumeration describing types of card, that can be used in the game.
+     * This enumeration is selection of all possibilities used in the game Magic: The Gathering.
+     */
     public enum cardType{
         INSTANT,
         SORCERY,
@@ -65,12 +66,21 @@ public class Game {
         LAND,
         ENCHANCEMENT
     }
+    /**
+     * Enumeration limiting choices of possible battle positions of creature.
+     * 
+     * - describes if creature can attack, block or both or none.
+     */
     public enum creatureBattlePossib{
         ATTACKER,
         DEFENDER,
         BOTH,
         NONE
     }
+    /** @brief Position on battlefield. 
+     * This enumeration determines when and where creature fights.
+     * If it is as attacker or defender. And then distinguish if fights in first strike phase or normal phase.
+     */
     public enum battlefieldStirikes{
         FIRST_STRIKE_ATTACKER,
         FIRST_STRIKE_DEFENDER,
@@ -113,6 +123,7 @@ public class Game {
         XML_BOOST_TIME_OF_USE_UNKNOWN
     }
     /** @brief List containing all input tags with readable content.
+     * This content is used as values in dictionary for user input.
      */
     public enum inputTags{
         WHITE,
@@ -131,7 +142,8 @@ public class Game {
         DECK_NAME,
         CARDS,
         CASTING_COST,
-        PROPERTIES   
+        PROPERTIES,
+        PICTURE_SOURCE
     }
     
     /** @brief Enum containing all possible types of attribute "usable" of tag boost.
@@ -166,12 +178,20 @@ public class Game {
         EOT(7),
         PLAYER_SWAP(8);
         private final int state;
-        gameState(int state){
+        private gameState(int state){
             this.state = state;
         }
+        /**
+         * Method used to get integer value of gameState. Used mainly to compare.
+         * @return Returns integer value of game state on which is this method called.
+         */
         public int stateOfGame(){
             return this.state;
         }
+        /**
+         * Redefinition of toString method which now returns string name of given phase.
+         * @return String value of game state on which is this method called.
+         */
         @Override
         public String toString(){
             switch(this.state){
@@ -223,6 +243,27 @@ public class Game {
         ISLAND,
         MOUNTAIN,
         COLORLESS;
+        /**
+         * Method gives access to colour depending on integer passed as parameter.
+         * 
+         * Number indicates these colours:
+         * 
+         * 0 White
+         * 
+         * 1 Black
+         * 
+         * 2 Green
+         * 
+         * 3 Blue
+         * 
+         * 4 Red
+         * 
+         * 5 Colourless
+         * 
+         * anything else is null
+         * @param colour Parameter by which is determined which colour should be returned.
+         * @return Colour defined by parameter or null, if unknown number was passed as aprameter.
+         */
         public static manaColours colourFromInt(int colour){
             switch(colour){
                 case 0:
@@ -244,23 +285,19 @@ public class Game {
         
     }
     
-    static int enemyPlPreviewPosX;
-    static int enemyPlPreviewPosY;
-    static int playerPreviewPosX;
-    static int playerPreviewPosY;
-    static int pictWidth; /**< Variable defining width of cards.*/
-    static int pictHeight; /**< Variable defining height of cards.*/
-    static int shift; /**< Variable storing value of shift of scroll panels on game board.*/
-    static gameState state; /**< Static variable characterising state of round.*/
-    static int currentPlayer; /**< Variable storing number characterising player currently playing. By this number player can be found in .*/
-    static public Map<Game.cardProperties,AbilityDecorator> propertyStorage; /**< Collection processing conversion between names of card properties and have stored pointers to them.*/
-    static public Map<String,Game.cardType> cardTypeTranslator; /**< Collection processing conversion between string name from input file to enum, which represent type of creature.*/
-    static public Map<String,Game.cardProperties> propertyTranslator; /**< Collection processing conversion between string name from input file to enum, which represent names of card properties.*/
-    static public Map<Game.composition,JPanel> GUIComposition = new HashMap<>();/**< Collection to map GUI components. Ease access throughout the game.*/
-    static public ArrayList<Exception> exceptTrack; /**< Collection of all exceptions thrown during run.*/
-    static public Map<String,Game.inputTags> inputTagTranslator; /**< Collection processing conversion between string to enum mapping input tags. */
-    static public Map<String,Game.boostUsabil> inpBoostUsAblTransl; /**< Collection processing conversion between string to enum mapping input attribute usAble of tag boost */
-    static public MouseAdapter mousLis; /**< Variable granting global acces to mouse listener.*/
+    public static int pictWidth; /**< Variable defining width of cards.*/
+    public static int pictHeight; /**< Variable defining height of cards.*/
+    public static int shift; /**< Variable storing value of shift of scroll panels on game board.*/
+    public static gameState state; /**< Static variable characterising state of round.*/
+    public static int currentPlayer; /**< Variable storing number characterising player currently playing. By this number player can be found in .*/
+    public static Map<Game.cardProperties,AbilityDecorator> propertyStorage; /**< Collection processing conversion between names of card properties and have stored pointers to them.*/
+    public static Map<String,Game.cardType> cardTypeTranslator; /**< Collection processing conversion between string name from input file to enum, which represent type of creature.*/
+    public static Map<String,Game.cardProperties> propertyTranslator; /**< Collection processing conversion between string name from input file to enum, which represent names of card properties.*/
+    public static Map<Game.composition,JPanel> GUIComposition = new HashMap<>();/**< Collection to map GUI components. Ease access throughout the game.*/
+    public static ArrayList<Exception> exceptTrack; /**< Collection of all exceptions thrown during run.*/
+    public static Map<String,Game.inputTags> inputTagTranslator; /**< Collection processing conversion between string to enum mapping input tags. */
+    public static Map<String,Game.boostUsabil> inpBoostUsAblTransl; /**< Collection processing conversion between string to enum mapping input attribute usAble of tag boost */
+    public static MouseAdapter mousLis; /**< Variable granting global acces to mouse listener.*/
     /** @brief static initialiser filling all HashMaps used as dictionaries.
      *  Method define how will conversion look like. Which means, if string in input file should be changed so must be his conversion to enum definition be changed.
      *  If any new ability is created it is necessary to add it translation.
@@ -308,6 +345,7 @@ public class Game {
         inputTagTranslator.put("cards", inputTags.CARDS);
         inputTagTranslator.put("castingCost", inputTags.CASTING_COST);
         inputTagTranslator.put("properties", inputTags.PROPERTIES);
+        inputTagTranslator.put("pictureSource",inputTags.PICTURE_SOURCE);
         
         inpBoostUsAblTransl.put("inPlay", Game.boostUsabil.IN_PLAY_GLOBAL_EFFECT);
         inpBoostUsAblTransl.put("attack", Game.boostUsabil.ATTACK);

@@ -32,7 +32,12 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-
+/** @brief Class adjudicating whole game.
+ * 
+ * This class creates necessary components, prepares graphics and inserts it into JPanel passed as argument to constructor.
+ * After creating this class, you have to call method :arbit, which prepares rest of the game and starts it.
+ * @author msi
+ */
 
 public class Arbiter extends MouseAdapter{
     private final JPanel pane;
@@ -51,16 +56,39 @@ public class Arbiter extends MouseAdapter{
         BOTTON,
         BOTH
     }
-    Arbiter(JPanel pane){
+    /**
+     * Class constructor creates essential data, before the game is initialised.
+     * Creates instance of Data class where are stored most of the non static data.
+     * Also prepares file chooser for choosing files and file paths.
+     * @param pane Parameter determines where all of the game will be shown.
+     */
+    public Arbiter(JPanel pane){
         this.pane = pane;
-        data = new Data();
+
         fc = new JFileChooser();
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setMultiSelectionEnabled(false);
+        fc.setDialogTitle("Choose game pictures");
+        int endIndex = 0;
+        int returnVal = fc.showOpenDialog(pane);
+        while(returnVal != JFileChooser.APPROVE_OPTION){
+            returnVal = fc.showOpenDialog(pane);
+            if(endIndex > 3)
+                System.exit(0);
+            else
+               ++endIndex;
+        }
+        data = new Data(fc.getSelectedFile().getPath());
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setFileFilter(new FileNameExtensionFilter("xml files (*.xml)", "xml"));
         attAdapt = new AttackButtonsListener((JFrame)SwingUtilities.getWindowAncestor(pane));
         discardPane = new JPanel();
     }
+    /** @brief Method to start all the game.
+     * 
+     * Method prepares game, creates environment and starts game.
+     * To start game use this method.
+     */
     public void arbitGame(){
         initializeGamePLay();
         createnviroment();
@@ -120,7 +148,7 @@ public class Arbiter extends MouseAdapter{
                 jp.removeAll();
                 jp.add(new JLabel(data.cardBackEmpty));
                 jp.revalidate();
-                OUtput.lostTheGame();
+                this.chackGameOver(); 
             }
     }/**
      * Main method for creating environment.
@@ -271,6 +299,7 @@ public class Arbiter extends MouseAdapter{
     }
     
     /** @brief Method used in filling JPanels of GUI. 
+     * 
      * Use this method when adding cards to your GUI. 
      * Method will fill JPanel, passed as argument, with Cards from second argument.
      * @param jpToFill reference to JPanel which will be filled with cards.
@@ -288,8 +317,8 @@ public class Arbiter extends MouseAdapter{
     }
     
     /** @brief Initialising procedure of the GAME (not actual MATCH).
-     *  Procedure creates players with their decks, decides order of players.
      * 
+     *  Procedure creates players with their decks, decides order of players. 
      */
      private void initializeGamePLay(){
         for (int i = 0; i < 2; ++i) {
@@ -326,8 +355,7 @@ public class Arbiter extends MouseAdapter{
              JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(pane),e.getMessage());
              System.exit(0);
          }
-         // maybe allow to explicitly say to user what to do.
-         //JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(pane),message);
+         
          fc.setDialogTitle(message);
          int returnVal = fc.showOpenDialog(pane);
          while(returnVal != JFileChooser.APPROVE_OPTION){
@@ -342,12 +370,18 @@ public class Arbiter extends MouseAdapter{
      
      /** @brief Method handling beginning of each new round.
       * 
+      * Method refreshes battleground and set next player to as current player.
       */
      public void newRound(){
          Battleground.refresh();
          order = (order+1)%2;
          Game.currentPlayer = order;
      }
+     /**
+      * Method triggers all abilities that cards in game have.
+      * These abilities are only those which, must be activated.
+      * Any other ability, player has to activate on his own.
+      */
      private void triggerCardGamePhaseAbil(){
          for (int i = 0; i < data.players[Game.currentPlayer].inPlayCard.size(); ++i) {
             data.players[Game.currentPlayer].inPlayCard.get(i).gameStateEvokeAbil(Game.state);
@@ -355,10 +389,11 @@ public class Arbiter extends MouseAdapter{
      }
     /** @brief Method representing and process untap phase of game.
      * 
+     * Method checks all cards in the game of current player and untap every and each which is tapped.
      */
     private void untapPhase(){
         triggerCardGamePhaseAbil();
-        Card c;
+        Card c;     
         for(int i = 0; i < data.players[Game.currentPlayer].inPlayCard.size();++i){
             c = data.players[Game.currentPlayer].inPlayCard.get(i);
             if(c.isTapAble && c.isTapped){
@@ -370,11 +405,15 @@ public class Arbiter extends MouseAdapter{
         data.players[Game.currentPlayer].manaPlayed = 0;
         changeGameState(Game.gameState.UPKEEP);
     }
+    /** @brief Method handling upkeep game phase.
+     * This method only triggers cards and move to draw phase.
+     */
     private void upKeep(){
         triggerCardGamePhaseAbil();
         changeGameState(Game.gameState.DRAW);
     }
     /** @brief Method processing draw phase of the game. 
+     * 
      *  Method changes Game.state to #MAIN_PHASE and makes player draw a card.
      */
     private void drawPhase(){
@@ -383,6 +422,11 @@ public class Arbiter extends MouseAdapter{
         changeGameState(Game.gameState.MAIN_PHASE);
         
     }
+    /**
+     * Method handling end of main phase of the game.
+     * Depending on main phase it trans
+     * 
+     */
     private void mainPahse(){
         switch(Game.state){
             case MAIN_PHASE:
@@ -395,6 +439,7 @@ public class Arbiter extends MouseAdapter{
         
     }
     /** @brief Method taking care of reseting amount of each mana to 0 and untapping cards.
+     * 
      *  Method calls showNoMana to set right amount of mana on screen.
      * @param newGameState 
      */
@@ -421,6 +466,7 @@ public class Arbiter extends MouseAdapter{
         showCurrentMana(Game.composition.COLORLESS_CP,Game.manaColours.COLORLESS,0);
     }
     /** @brief Method repainting zeros as mana count.
+     * 
      *  Method used at the end of each phase to show zero as mana count.
      * @param manaPlace Key to Game.GUIComposition, which contains all components.
      */
@@ -640,6 +686,13 @@ public class Arbiter extends MouseAdapter{
         showHand(Game.currentPlayer);
         changeGameState(Game.gameState.UNTAP);
     }
+    /** @brief Redefinition of mouseClicked event.
+     * 
+     *  This event can be caught on cards or button indicating game state.
+     *  When button was hit, then evaluation of current phase occurs and therefore finishes this phase.
+     *  When card is hit, then this method cause it to be played, if card was in hand or use it's ability if card was elsewhere.
+     * @param e Can be card or button.
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
         this.pane.repaint();
@@ -750,6 +803,7 @@ public class Arbiter extends MouseAdapter{
          
     }
     /** Method checking if player have got enough mana in pool to cast a card.
+     * 
      *  Method checks right amount of specified mana and finds out if rest of mana pool is high enough to cover colorless mana cost.
      * @param c Card to be casted.
      * @return Returns true, if player has enough mana and false otherwise.
@@ -773,6 +827,7 @@ public class Arbiter extends MouseAdapter{
         return true;
     }
     /** @brief Method tries pay mana cost of card.
+     * 
      *  Method check if player has enough mana in pool. 
      * @param c Card to be paid for.
      * @return True if card is playable and played.

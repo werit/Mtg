@@ -14,19 +14,22 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/**
- *
+/** @brief Base class for all cards.
+ * Abstract class used as template for all other cards. Contains information common for all cards.
+ * 
+ * name,position in game,type,controller, possibility to tap and others.
+ * Also stores it's picture and it's abilities.
  * @author werit
  */
 public abstract class Card extends JPanel{
-   
-
-    
-    Game.cardType type;
+    /**
+     * Defines what type card is.
+     */
+    public Game.cardType type;
     protected Player owner;
     protected Player controller;
     boolean isTapAble;
-    Game.cardLocation cardLoc;
+    public Game.cardLocation cardLoc; /**< Variable storing information about location of card. For example GamecardLocation:IN_HAND*/
     protected boolean isTapped = false;
     protected String cardName;
     
@@ -34,24 +37,51 @@ public abstract class Card extends JPanel{
     
     Map<Game.manaColours,Integer> manaCosts; /**< Variable storing all mana cost per every color.*/
     
-    JLabel fileSource;
+    protected JLabel fileSource; /**<Container for card picture.*/
+
+    /** @brief Card constructor. Add picture to card and set her into deck.
+     * 
+     * @param pict Picture of a card.
+     */
     protected Card(JLabel pict){
         fileSource = pict;
         add(pict);
         cardLoc = Game.cardLocation.IN_DECK;
         manaCosts = new HashMap<>();
     }
-    
-    void accept(AbilityDecorator ability){
+    /** @brief Visitor method. Prepares any card to accept AbilityDecorator. 
+     * This method should not be used, if used, that means, that unknown AbilityDecorator was passed as parameter.
+     * @param ability 
+     */
+    public void accept(AbilityDecorator ability){
         ability.visit(this);
     }
-    void accept(Haste ability){
+    /** @brief Visitor method. Prepares any card to accept Haste. 
+     * This method should be redefined in descendant. If this method is executed, then card does not accept Haste ability.
+     * @param ability Haste is ability for creatures, that ignores summoning sickness.
+     */
+    public void accept(Haste ability){
         ability.visit(this);
     }
-    void accept(FirstStrike ability){
+    /** @brief Visitor method. Prepares any card to accept FirstStrike. 
+     * This method should be redefined in descendant. If this method is executed, then card does not accept FirstStrike ability.
+     * @param ability First strike is ability, that makes creatures attack in first strike attack phase.
+     */
+    public void accept(FirstStrike ability){
         ability.visit(this);
     }
-    void accept(WhiteMana ability){
+    /** @brief Visitor method. Prepares any card to accept Attack. 
+     * This method should be redefined in descendant. If this method is executed, then card does not accept Attack ability.
+     * @param ability Attack gives creatures ability to attack in normal attack phase.
+     */
+    public void accept(Attack ability){
+        ability.visit(this);
+    } 
+    /** @brief Visitor method. Prepares any card to accept WhiteMana. 
+     * This method should be redefined in descendant. If this method is executed, then card does not accept WhiteMana ability.
+     * @param ability White mana is ability mainly for mana cards, that allows them to produce white mana.
+     */
+    public void accept(WhiteMana ability){
         ability.visit(this);
     }
     /** @brief Method handling tapping of card.
@@ -59,7 +89,7 @@ public abstract class Card extends JPanel{
      *  If during attack, then call all anytime usable abilities and attack abilities otherwise call only anytime usable abilities.
      * @param state Parameter defining in which game state is currently game
      */
-    void onUse(Game.gameState state){
+    public void onUse(Game.gameState state){
         ArrayList<Game.cardProperties> abil = getAbilPerState(state);
         abil.addAll(abilPerBoostState(Game.boostUsabil.INSTANT));
         abilChoices(abil);
@@ -79,8 +109,8 @@ public abstract class Card extends JPanel{
                 cd.visit(this);
         }
     }
-    /**
-     * I do not know how does it work....
+    /** @brief Redefinition of paintComponent.
+     * Method redefines drawing of component in case it is tapped.
      * @param g 
      */
     
@@ -115,10 +145,11 @@ public abstract class Card extends JPanel{
         }
     }
             
-      /**
-      * Method when card is cast into play.
+      /** @brief Method when card is cast into play.
+      * Method activates abilities which are triggered by card coming into the game.
+      * Also adds card to storage inside play and removes card from hand.
       */
-     void cardCast(){
+     public void cardCast(){
         ArrayList<Game.cardProperties> abil;
         this.cardLoc = Game.cardLocation.IN_PLAY;
         abil = this.abilUse.get(Game.boostUsabil.COMES_INTO_PLAY);
@@ -135,7 +166,7 @@ public abstract class Card extends JPanel{
      * @param state Parameter carries name of key, which is to be tested.
      * @return Method returns array assigned to key or new empty array. Never null.
      */
-    ArrayList<Game.cardProperties> abilPerBoostState(Game.boostUsabil state){
+    public ArrayList<Game.cardProperties> abilPerBoostState(Game.boostUsabil state){
         if(abilUse.containsKey(state)){
             return abilUse.get(state);
         }
@@ -150,7 +181,7 @@ public abstract class Card extends JPanel{
      *  If more, then choose which one.
      * @param possibleProp Array of all found abilities, that can be used during this state of game.
      */
-    void abilChoices(ArrayList<Game.cardProperties> possibleProp){
+    public void abilChoices(ArrayList<Game.cardProperties> possibleProp){
         switch(possibleProp.size()){
                     case 0:
                         OUtput.errCanotTap();
@@ -164,6 +195,9 @@ public abstract class Card extends JPanel{
                         break;
                 }
     }
+    /**
+     * Method refreshes tapped card to original state.
+     */
     public void refreshCard(){
         if(isTapAble)
             isTapped = false;

@@ -46,7 +46,7 @@ public class Player {
      *  Method add to private store space of player possible attacker passed as parameter.
      *  @param attacker Creature card that is able to attack this turn.
      */
-    void addAttacker(Card attacker){
+    public void addAttacker(Card attacker){
         this.creatures.get(Game.creatureBattlePossib.ATTACKER).add(attacker);
     }
     
@@ -54,7 +54,7 @@ public class Player {
      *  Return array has no reference to original array stored in class Player, so any change will NOT be done to original array.
      *  @return Return value is array of all attacker. This array has no reference to original objects.
      */
-    CardEvent[] getAttackers(){
+    public CardEvent[] getAttackers(){
         CardEvent[] att = new CardEvent[this.creatures.get(Game.creatureBattlePossib.ATTACKER).size() + this.creatures.get(Game.creatureBattlePossib.BOTH).size()];
         System.arraycopy(this.creatures.get(Game.creatureBattlePossib.ATTACKER).toArray(), 0, att, 0,this.creatures.get(Game.creatureBattlePossib.ATTACKER).size() );
         System.arraycopy(this.creatures.get(Game.creatureBattlePossib.BOTH).toArray(), 0, att,
@@ -67,7 +67,7 @@ public class Player {
      *  Method add to private store space of player possible defender passed as parameter.
      *  @param defender Creature card that is able to defend this turn.
      */
-    void addDefender(Card defender){
+    public void addDefender(Card defender){
         this.creatures.get(Game.creatureBattlePossib.DEFENDER).add(defender);
     }
     
@@ -75,7 +75,7 @@ public class Player {
      *  Return array has no reference to original array stored in class Player, so any change will NOT be done to original array.
      *  @return Return value is array of all attacker. This array has no reference to original objects.
      */
-    CardEvent[] getDefenders(){
+    public CardEvent[] getDefenders(){
         CardEvent[] def = new CardEvent[this.creatures.get(Game.creatureBattlePossib.DEFENDER).size() + this.creatures.get(Game.creatureBattlePossib.BOTH).size()];
         System.arraycopy(this.creatures.get(Game.creatureBattlePossib.DEFENDER).toArray(), 0, def, 0,this.creatures.get(Game.creatureBattlePossib.DEFENDER).size() );
         System.arraycopy(this.creatures.get(Game.creatureBattlePossib.BOTH).toArray(), 0, def,
@@ -88,7 +88,7 @@ public class Player {
      *  Method add to private store space of player possible attacker and blocker passed as parameter.
      *  @param attAndDef Creature card that is able to attack or block this turn.
      */
-    void addAttackerAndDef(Card attAndDef){
+    public void addAttackerAndDef(Card attAndDef){
         this.creatures.get(Game.creatureBattlePossib.BOTH).add(attAndDef);
     }
     
@@ -96,12 +96,14 @@ public class Player {
      *  Method add to private store space of player non attacker and non defender passed as parameter.
      *  @param norAttNorDef Creature card that is unable to attack or block now.
      */
-    void addNonAttackerNonDef(Card norAttNorDef){
+    public void addNonAttackerNonDef(Card norAttNorDef){
         this.creatures.get(Game.creatureBattlePossib.NONE).add(norAttNorDef);
     }
     
     /** 
      * methods to add certain amount of mana to mana pool 
+     * @param colour
+     * @param count
      */
     public void addMana(Game.manaColours colour,int count){
         switch(colour){
@@ -131,7 +133,9 @@ public class Player {
     void remMana(Game.manaColours colour,int count){
         addMana(colour,-count);
     }
-    /** @brief Method to reveal current amount of mana specified as parameter in pool.
+    /**
+     * @param colour *  @brief Method to reveal current amount of mana specified as parameter in pool.
+     * @return 
      */
     public int getManaCount(Game.manaColours colour){
         switch(colour){
@@ -229,10 +233,4 @@ public class Player {
     private int lifes; /**< Ammount of lifes of player.*/
     private Map<Game.manaColours,Integer> manaPoolPlayer;
     private byte indexOfCardToDraw;
-    /*private byte colorlessPoolPlayer;
-    private byte mountainPoolPlayer;
-    private byte plainPoolPlayer;
-    private byte islandPoolPlayer;
-    private byte swampPoolPlayer;
-    private byte forestPoolPlayer;*/
 }

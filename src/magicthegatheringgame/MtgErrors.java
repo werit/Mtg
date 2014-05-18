@@ -6,8 +6,8 @@
 
 package magicthegatheringgame;
 
-/**
- *
+/** @brief Class serving as storage for error messages.
+ * Class stores user defined errors for sml reader.
  * @author msi
  */
 public class MtgErrors {
@@ -55,5 +55,13 @@ public class MtgErrors {
      */
     public static String wrongAmntOfParam(String elementName,int hadParameters,int expectedAmntOfParam){
         return "Element " + elementName + " has wrong amount of parameters. Expected amount: " + expectedAmntOfParam + " but element has " + hadParameters;
+    }
+    /** @brief Method for user output of error in pathname
+     * Method returns string that tells user which pathname was wrong or not found.
+     * @param path Wrong or unknown path.
+     * @return String representing error message. Contains wrong or unknown path.
+     */
+    public static String wrongPath(final String path){
+       return "File or directory not found while searching path : '" + path + "'"; 
     }
 }

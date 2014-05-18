@@ -8,12 +8,18 @@ package magicthegatheringgame;
 
 import java.util.ArrayList;
 
-/**
- *
+/** @brief Class serving for communication with player in case of multiple possibilities of abilities.
+ * There is possibility, that card has more then one activated ability, that can player use at the time.
+ * Method of this class handles those choices.
+ * Currently not used due limit of single ability.
  * @author msi
  */
 public class OUtput {
     private static ArrayList<Game.cardProperties> choices;
+    /**
+     * Method used for summing of usable choices of card.
+     * @param choices Parameter represents set of choices from player can choose.
+     */
     public static void addChoices(ArrayList<Game.cardProperties> choices){
         for(int i = 0; i < choices.size();++i){
             OUtput.choices.add(choices.get(i));
@@ -21,26 +27,16 @@ public class OUtput {
         
     }
     
-    /** @brief Method showing all possible choices of 
-     * 
+    /** @brief Method showing all possible choices of abilities.
+     * Method show possible choices to player thru GUI.
      */
     public static void showChoices(){
         
     }
+    /** @brief Method shows warning that card cannot be tapped.
+     * Method created dialog, that warns player that he cannot tap/use card.
+     */
     public static void errCanotTap(){
         
-    }
-    public static void lostTheGame(){
-        
-    }
-    public static boolean changesToGUI;
-    public static Game.cardLocation cardTakenFrom;
-    public static Game.cardLocation cardPutTo;
-    public static Card movedCard;
-    static {
-        choices = new ArrayList<>();
-        changesToGUI = false;
-        cardTakenFrom = null;
-        cardPutTo = null;
     }
 }

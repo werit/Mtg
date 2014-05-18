@@ -9,6 +9,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -20,14 +21,16 @@ import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-/**
- *
+
+/** @brief Class handling reading a deck from xml file.
+ * 
+ * Class contains parser for xml file.
+ * Class should be used by #readDeckMain method.
  * @author werit
  */
 public class ReadDeck extends DefaultHandler {
 
     public static void readDeckMain(String inputFile,Player owner) {
-        // TODO code application logic here
         try {
             // assign input file
             INPUT_FILE = inputFile;
@@ -43,13 +46,13 @@ public class ReadDeck extends DefaultHandler {
             // Process input data
             parser.parse(source);
 
-        } catch (Exception e) {
+        } catch (SAXException | IOException e) {
 
             e.printStackTrace();
 
         }
     }
-    public ReadDeck(Player owner){
+    private ReadDeck(Player owner){
         readingPath = false;
         tagValue = new HashMap<>();
         this.owner = owner;
@@ -58,6 +61,19 @@ public class ReadDeck extends DefaultHandler {
         allCardProp = new HashMap<>();
         
     }
+    /** @brief Method reading starting element of each pair in xml file.
+     * Method handles start of elements and depending of their name prepares their content for next processing.
+     * Method itself distinguish element these element names
+     *  - card, which is element containing info about card
+     *  - boost. which is element containing information about card abilities
+     *  - pictureSource, which is name of card picture.
+     *  - picturePath , which is path to all pictures of cards.
+     * @param uri  the Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is not being performed
+     * @param localName the local name (without prefix), or the empty string if Namespace processing is not being performed
+     * @param qName the qualified name (with prefix), or the empty string if qualified names are not available
+     * @param atts the attributes attached to the element. If there are no attributes, it shall be an empty Attributes object. The value of this object after startElement returns is undefined 
+     * @throws SAXException Exception thrown by parser.
+     */
      @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
         inpTag = Game.inputTagTranslator.get(localName);
@@ -104,6 +120,10 @@ public class ReadDeck extends DefaultHandler {
                     readingPath = true;
                     inpTag = null;
                     break;
+                case PICTURE_SOURCE:
+                    isReadingPictAbsPath = true;
+                    inpTag = null;
+                    break;
             }         
         }
         else
@@ -117,6 +137,18 @@ public class ReadDeck extends DefaultHandler {
             }
         }
     }
+    /** @brief redefinition of parent method. Method sums information obtained by processing element.
+     * Method process two things
+     *  - card element
+     *      -# card type creature handles creature card creation
+     *      -# card type land handles land card creation
+     *  - boost element \n
+     *    Gives card it's abilities.
+     * @param uri  the Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is not being performed
+     * @param localName the local name (without prefix), or the empty string if Namespace processing is not being performed
+     * @param qName the qualified name (with prefix), or the empty string if qualified names are not available
+     * @throws SAXException Exception thrown by parser.
+     */
      @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if(Game.inputTagTranslator.get(localName) != null && Game.inputTagTranslator.get(localName).equals(Game.inputTags.CARD)){
@@ -136,11 +168,32 @@ public class ReadDeck extends DefaultHandler {
                 allCardProp.put(boostUsabil, new ArrayList<>(proper));
             }
     }
+    /** Method handling string content of elements.
+     * Method works with three element's content.
+     *  - process path of all pictures of card
+     *  - process specific names of pictures
+     *  - process number of card to be created in player's deck
+     * @param chars Array containing up to 255 chars of currently read text element.
+     * @param start Position in array where chars of element starts.
+     * @param length Amount of chars of this element.
+     * @throws SAXException Exception of parser.
+     */
      @Override
     public void characters(char[] chars, int start, int length) throws SAXException {       
-        if (readingPath)
-            picturePath = new String(chars,start,length);
-        readingPath = false;
+        if (readingPath){
+            picturePath =  picturesBaseAbsolutePath + File.separator + new String(chars,start,length);
+            File testPath = new File(picturePath);
+            if(!(testPath.exists()&&testPath.isFile()&&testPath.isAbsolute()))
+                this.errors.add(MtgErrors.wrongPath(picturePath));
+            readingPath = false;
+        }
+        if (isReadingPictAbsPath){
+            picturesBaseAbsolutePath = new String(chars,start,length);
+            File testPath = new File(picturesBaseAbsolutePath);
+            if(!(testPath.exists()&&testPath.isDirectory()&&testPath.isAbsolute()))
+                this.errors.add(MtgErrors.wrongPath(picturesBaseAbsolutePath));
+            isReadingPictAbsPath = false;
+        }
         if (inpTag != null){
             setCount(new String(chars,start,length));
             inpTag = null;
@@ -150,7 +203,7 @@ public class ReadDeck extends DefaultHandler {
     /**
      * Hit end of document.
      * In case of errors game will not continue and on error output will be written all error messages.
-     * @throws SAXException 
+     * @throws SAXException Exception of parser.
      */
      @Override
     public void endDocument() throws SAXException {
@@ -235,6 +288,8 @@ public class ReadDeck extends DefaultHandler {
     private ArrayList<String> errors;
     private static String INPUT_FILE;
     private Player owner;                   /**< Local storage of reference to owner of deck. */
+    private boolean isReadingPictAbsPath; /**< Variable represents state of reading #picturesBaseAbsolutePath*/
+    private String picturesBaseAbsolutePath; /**< Variable representing path to all pictures referenced in xml file.*/
     private String picturePath;             /**< String path to real location of picture representing actualy read card.*/
     private boolean readingPath;            /**< Determining if picture path of card is beign read.*/
     private Game.cardType currCardType;     /**< Variable storing information about current card type.*/

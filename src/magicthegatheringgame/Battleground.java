@@ -10,18 +10,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
+/** @brief Class handling storing attacker and blockers and also their evaluating their fights.
+ * Class containing all attackers and blockers depending on their strike phase abilities.
+ * Class handles dealing with dead creatures.
  * @author msi
  */
 public class Battleground {
     private static Player defPL;
-    static Map<Creature,Game.battlefieldStirikes> fighters; /*< Stores fighting creature and defines it's priority during attack.*/
-    static Map<Creature,ArrayList<Creature>> blockerList; /*< Storage for attacker and creatures blocking it. Key is attacker and ArrayList stores blockers.*/
+    public static Map<Creature,Game.battlefieldStirikes> fighters; /*< Stores fighting creature and defines it's priority during attack.*/
+    public static Map<Creature,ArrayList<Creature>> blockerList; /*< Storage for attacker and creatures blocking it. Key is attacker and ArrayList stores blockers.*/
     /** Method clears battleground for next battle.
      *  Method clears HashMap :fighters and 
      */
-    static void refresh(){
+    public static void refresh(){
         assert (fighters != null);
         assert(blockerList != null);
         fighters.clear();
@@ -67,7 +68,7 @@ public class Battleground {
      *  Method add attackers to blockerList and makes sure, there is ArrayList for each attacker.
      * @param attackers Array of attackers of current round.
      */
-    static void addAttackers(Creature[] attackers){
+    public static void addAttackers(Creature[] attackers){
         for (int i = 0; i < attackers.length; ++i) {
             blockerList.put(attackers[i],new ArrayList<Creature>());
         }
@@ -76,7 +77,7 @@ public class Battleground {
      * Method to set who defend. 
      * @param defendingPl Player who's creatures are defending.
      */
-    static void setDefPlayer(Player defendingPl){
+    public static void setDefPlayer(Player defendingPl){
         defPL = defendingPl;
     }
     /**
@@ -85,7 +86,7 @@ public class Battleground {
      * 
      * if so then it is first strike phase otherwise it is normal strike phase.
      */
-    static void evaluateFight(Game.battlefieldStirikes strike){
+    public static void evaluateFight(Game.battlefieldStirikes strike){
         assert(defPL != null);
         Game.battlefieldStirikes att;
         Game.battlefieldStirikes def;

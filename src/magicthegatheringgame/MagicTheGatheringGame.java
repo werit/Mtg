@@ -5,19 +5,20 @@
 package magicthegatheringgame;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
-/**
- *
+/** @brief Main class for game Magic: The Gathering.
+ * contains main method which calls run method of new Runnable.
  * @author werit
  */
 public class MagicTheGatheringGame {
     
-    /**@brief Create main JFrame which will contain all components.
-     * 
+    /** @brief Method called by run method of Runnable.
+     * Method creates new frame where game will be held and creates arbiter class which handles all events of the game.
      */
     private static void createAndShowGui(){
         JFrame frame = new JFrame("Magic the Gathering");
-        MainComponent jp = new MainComponent();
+        JPanel jp = new JPanel();
         
         frame.add(jp);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

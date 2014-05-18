@@ -3,6 +3,7 @@
     Green Deck
   </deckName>
   <cards>
+    <pictureSource>D:\Source pictures</pictureSource>
     <card name="Plain" type="land">
       <castingCost>
         <!-- order is white, black, green, blue, red and colourless -->
@@ -14,7 +15,7 @@
         <colourless>0</colourless>
       </castingCost>
       <count>11</count>
-      <picturePath>D:\Source pictures\Plains364.jpg</picturePath>
+      <picturePath>Plains364.jpg</picturePath>
       <properties>
         <boost usable="instant">
           <WhiteMana/>
@@ -32,7 +33,7 @@
         <colourless>1</colourless>
       </castingCost>
       <count>4</count>
-      <picturePath>D:\Source pictures\GloriousAnthem.jpg</picturePath>
+      <picturePath>GloriousAnthem.jpg</picturePath>
       <properties>
         <boost usable="inPlay">
           <PowerBoost/>
@@ -51,7 +52,7 @@
       <count>4</count>
       <power>1</power>
       <toughness>1</toughness>
-      <picturePath>D:\Source pictures\TundraWolves.jpg</picturePath>
+      <picturePath>TundraWolves.jpg</picturePath>
       <properties>
         <boost usable="attack">
           <FirstStrike></FirstStrike>
